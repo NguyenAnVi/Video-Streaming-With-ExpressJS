@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "ts-node": {
+    "esm": true, // «———— enabling ESM for ts-node   
+  }, 
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "outDir": "dist",
+  "paths": {
+    "@html/*": ["html/*"]
+  }
+}
