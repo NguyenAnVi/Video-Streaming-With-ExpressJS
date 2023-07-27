@@ -1,0 +1,103 @@
+:root{
+  --footer-height:100px;
+}
+#appWrapper {
+  margin: 8px;
+  padding: 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  background-color: antiquewhite;
+
+  border-radius: 8px;
+}
+#header, #body, #footer{
+  box-sizing: border-box;
+}
+#header {
+  display: flex;
+  gap:16px;
+  align-items: center;
+  padding: 8px;
+
+  height: 45px;
+  line-height: 1.5;
+  background-color: aqua;
+}
+#body {
+  display: flex;
+  justify-items: stretch;
+
+  background-color: aquamarine;
+  min-height: calc(100vh - 45px - var(--footer-height) - 48px);
+}
+#body > #sidebar{
+  overflow: hidden;
+  width: 0;
+  transition: width .5s ease-in-out;
+  -webkit-transition: width .5s ease-in-out;
+  -moz-transition: width .5s ease-in-out;
+  -ms-transition: width .5s ease-in-out;
+  -o-transition: width .5s ease-in-out;
+
+}
+#body > #sidebar.opened{
+  width: 200px;
+  border-right:1px solid rgb(171, 171, 171);
+
+}
+#body > #content{
+  width: 100%;
+  padding: 16px;
+}
+#footer {
+  background-color: azure;
+  height: var(--footer-height);
+  top: auto;
+  bottom: 0;
+}
+
+.logo {
+  margin: 0;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 8px;
+  align-items: stretch;
+  font-size: 16px;
+}
+
+nav a.router-link-exact-active {
+  background-color: var(--color-text-light);
+  color: black;
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: var(--color-text-light);
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media only screen and (max-width: 720px) {
+  #appWrapper {
+    margin: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+}
+}
