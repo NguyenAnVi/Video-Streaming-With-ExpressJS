@@ -6,9 +6,11 @@ class Locals {
     dotenv.config({ path: path.join(__dirname, "../../.env") });
     const port = process.env.PORT;
     const mongoUri = process.env.MONGO_URI;
+    const jwtSecret = process.env.JWT_SECRET;
     return {
       port,
       mongoUri,
+      jwtSecret
     };
   }
 }

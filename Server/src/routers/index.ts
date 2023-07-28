@@ -1,8 +1,12 @@
 import express from "express";
-import videoStreamingRouter from "./videoStreaming.router"
+import VideoStreamingRouter from "../routers/VideoStreaming.router"
+import HomePageRouter from "./HomePage.router";
+import AuthenticationRouter from "./Authentication.router";
 const router = express.Router();
 
 export default (): express.Router => {
-  videoStreamingRouter(router);
+  VideoStreamingRouter(router);
+  HomePageRouter(router);
+  AuthenticationRouter(router);
   return router;
 };
