@@ -1,6 +1,4 @@
-:root{
-  --color-text-light:#dee6ff
-}
+@import url(./colortheme.css);
 *{
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
@@ -10,11 +8,16 @@ body, #app {
   box-sizing: border-box;
 }
 a{
+  cursor: pointer;
+  text-decoration: none;
   transition: background-color .5s ease;
   -webkit-transition: background-color .5s ease;
   -moz-transition: background-color .5s ease;
   -ms-transition: background-color .5s ease;
   -o-transition: background-color .5s ease;
+}
+a:visited{
+  color: unset;
 }
 @media (hover: hover) {
   a:hover {

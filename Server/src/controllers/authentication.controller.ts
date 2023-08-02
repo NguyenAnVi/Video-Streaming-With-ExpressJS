@@ -9,7 +9,7 @@ export const signin = async (req: Request, res:Response, next: NextFunction) => 
   if (!req.body.email || !req.body.password) {
     return res
       .status(422)
-      .send({ error: 'You must provide email and password.' });
+      .send({ message: 'You must provide email and password.' });
   }
   else {
     await UserModel
@@ -23,20 +23,25 @@ export const signin = async (req: Request, res:Response, next: NextFunction) => 
               password, 
               (err:Error, isMatch: boolean) => {
                 if (err || !isMatch) {
-                  return res.status(401).send({ 
-                    status:false, 
-                    message: err.message ||   "Wrong password or phone number" })
+                  return res.status(401).json({ 
+                    message: "Wrong password or phone number" })
                 }
                 const token = Token.generateToken(result);
-                return res.json({
-                  status: true,
-                  token
-                });
+                result.token = token;
+                result.save()
+                .then(()=>{
+                  return res.json({
+                    name:result.fullName,
+                    id:result._id,
+                    phone:result.phone,
+                    email:result.email,
+                    accessToken:token
+                  });
+                })
               }
             )
           } else {
             return res.status(401).json({
-              status:false,
               message:"unauthorized"
             })
           }
@@ -50,7 +55,7 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
   if (!email || !password || !name || !confirmPassword || !phone) {
     return res
       .status(422)
-      .send({ error: 'You must provide name, phone, password and confirm your new password.' });
+      .send({ message: 'You must provide name, phone, password and confirm your new password.' });
   }
   UserModel
     .findOne({
@@ -64,7 +69,7 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
         if (result) {
           return res
             .status(422)
-            .send({ error: 'Phone or email is in use' });
+            .json({ message: 'Phone or email is in use' });
         } else {
           const user = new UserModel({
             name ,
@@ -85,7 +90,6 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
             })
             .catch((err:Error) => {
               res.status(500).json({
-                status:false,
                 message:"Error while signin :"+err.message
               });
             })
@@ -95,5 +99,5 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
 }
 
 export const test = (req: any, res:any, next:NextFunction)=>{
-  return res.status(200).json({status:true, message:"Success"})
+  return res.status(200).json({message:"Success"})
 }

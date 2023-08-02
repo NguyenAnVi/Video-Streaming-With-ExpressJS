@@ -22,7 +22,9 @@ export default {
       players: {},
       HLSCore,
       volume: 80,
-      source:""
+      source:"",
+      title:"",
+      cover:""
     };
   },
   methods: {
