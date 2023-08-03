@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import HLSCore from '@cloudgeek/playcore-hls';
 import PictureInPicture from '@/components/PictureInPicture.vue';
 export default {
   name: 'App',
@@ -20,8 +19,7 @@ export default {
   data() {
     return {
       players: {},
-      HLSCore,
-      volume: 80,
+      volume: 60,
       source:"",
       title:"",
       cover:""

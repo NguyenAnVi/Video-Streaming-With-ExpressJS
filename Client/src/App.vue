@@ -10,6 +10,7 @@
             class="logo"
             src="@/assets/logo.svg"
         />
+        <span style="color:rgb(0, 141, 96); font-size: larger; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">YOULUBE</span>
       </div>
       <div>
         <input type="text" name="search" id="search" placeholder="Search ...">
