@@ -5,25 +5,31 @@ export const video = {
   namespaced: true,
   state: initialState,
   actions: {
-    getVideoProperties({ commit }, videoId) {
-      return ApiService.getVideoProperties(videoId).then(
-        successResponse => {
-          commit('getSuccess', successResponse);
-          return Promise.resolve(successResponse);
-        },
-        failureResponse => {
-          commit('getFailure');
-          return Promise.reject(failureResponse);
-        }
-      );
+    getVideoProperties( {}, payload ){
+      return new Promise ( async function (resolve, reject) {
+        return await ApiService.getVideoProperties(payload.id)
+          .then(function (response) {
+            if(response.status){
+              const data = response; 
+              resolve(data);
+            } else {
+              const error = response.error || "NetworkError";
+              reject(error);
+            }
+          });
+      });
+    },
+    getVideosForHomePage() { // in future : getVideoForHomePage For Personalization (User logged in)
+      return new Promise( async (resolve, reject) => {
+        await ApiService.getVideos()
+          .then( 
+            response=>{
+              if(response.status) 
+                resolve (response.data);
+              else 
+                reject(response.error);
+            });
+      });
     }
   },
-  mutations: {
-    getSuccess(state, response) {
-      state.currentvideo = response.video;
-    },
-    getFailure(state) {
-      state.currentvideo = null;
-    },
-  }
 };

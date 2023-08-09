@@ -1,6 +1,7 @@
 import express from "express";
-import VideoStreamingRouter from "../routers/VideoStreaming.router"
+
 import HomePageRouter from "./HomePage.router";
+import VideoStreamingRouter from "./VideoStreaming.router";
 import AuthenticationRouter from "./Authentication.router";
 const router = express.Router();
 

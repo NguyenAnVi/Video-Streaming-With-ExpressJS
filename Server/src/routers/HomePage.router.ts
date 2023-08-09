@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {getAllVideos} from "../controllers/homePage.controller";
+import {getVideos} from "../controllers/homePage.controller";
 
 export default (router: Router) => {
-  router.get("/homepage", getAllVideos);
+  router.get("/getvideos", getVideos);
 };

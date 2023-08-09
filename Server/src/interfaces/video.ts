@@ -5,8 +5,12 @@ export type VideoDocument = mongoose.Document & {
   description: string;
   path: string;
   thumbnail: string;
-  demo: string;
-  status: string;
+  interactions:{
+    likes:Number,
+    dislikes:Number
+  };
+  views:Number
+  status: Number;
   deleted_at: mongoose.Schema.Types.Date;
 };
 export default VideoDocument;

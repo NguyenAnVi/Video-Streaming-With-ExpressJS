@@ -7,8 +7,12 @@ const VideoScheme = new mongoose.Schema<VideoDocument>(
     description: String,
     path: String,
     thumbnail: String,
-    demo: String,
-    status: String,
+    views:Number,
+    interactions:{
+      likes:Number,
+      dislikes:Number
+    },
+    status: Number,
     deleted_at: mongoose.Schema.Types.Date
   },
   { timestamps: true, collection: "Video" }

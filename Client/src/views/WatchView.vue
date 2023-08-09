@@ -1,9 +1,13 @@
 <script>
-import { computed, toRaw } from "vue";
-import VideoPlayer from "../components/VideoPlayer.vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
+import { reactive, watchEffect, ref } from "vue";
+import VideoPlayer from "../components/VideoPlayer.vue";
 
 const toast = useToast();
+const allowRender = ref(false);
+
 
 export default {
   components : {
@@ -11,53 +15,79 @@ export default {
   },
   data(){
     return {
-      source:this.getVideoSource
+      videoProps: this.video
     }
   },
-  methods:{
-    getId(){
-      return this.$router.currentRoute._value.params.id;
-    },
-    getVideo() {
-      const videoId = this.getId();
-      // get video from server
-      this.$store.dispatch("video/getVideoProperties", videoId).then(
-        (response)=>{
-          return (response.video);
-        },
-        (response)=>{
-          toast(response.response.data.message || response.message, {type:"error"});
-        }
-      )
-    }
+  async setup(){
+    const toast = useToast();
+    const route = useRoute();
+    const store = useStore();
+    var video = reactive({
+      id:"",
+      props:{}
+    });
+    video.id = route.query.v;
+    await store.dispatch("video/getVideoProperties", {
+      id:video.id
+    })
+    .then(
+      response=>{
+        video.props = response.data.video;
+      }
+    )
+    .catch(
+      error=>{
+        toast(error.message, {type:"error"});
+        video.props = {};
+      }
+    );
+    return { video };
   },
-  computed:{
-    getVideoSource(){
-      const result = toRaw(this.$store.state.video.currentvideo);
-      if (result)
-      return result.path;
-      else return null;
-    },
-    getVideoTitle(){
-      const result = toRaw(this.$store.state.video.currentvideo);
-      if (result)
-      return result.title;
-      else return null;
-    },
-    getVideoCover(){
-      const result = toRaw(this.$store.state.video.currentvideo);
-      if (result)
-      return result.thumbnail;
-      else return null;
-    },
-  },
-  created(){
-    this.getVideo();
-  }
 }
 </script>
-
 <template>
-  {{ source }}
-  <VideoPlayer  videoId="videoId" :src.sync="this.getVideoSource" :title.sync="this.getVideoTitle" :cover.sync="this.getVideoCover"/>
+  <div class="content-wrapper">
+    <div class="video-column">
+      <div class="video-wrapper">
+          <!-- <VideoPlayer ref="videoplayer" :key="this.allowRender" v-if="allowRender" videoId="videoId" :src.sync="this.getVideoSource" :title.sync="this.getVideoTitle" :cover.sync="this.getVideoCover"/> -->
+          <VideoPlayer :properties="this.video.props"/>
+      </div>
+
+      <!-- descriptions here -->
+      <div class="video-descriptions">
+        <h2>{{ this.video.props.title }}</h2>
+      </div>
+      <!-- comments here -->
+    </div>
+    <div class="recommend-column">
+      <div>Recommended Videos</div>
+    </div>
+  </div>
 </template>
+
+
+<style scoped>
+.content-wrapper{
+  display: flex;
+  min-height: 100%;
+}
+.video-column{
+  display: flex;
+  width: 480px;
+  flex-grow: 3;
+  flex-direction: column;
+  margin-inline: 16px;
+  & .video-wrapper{
+    margin-block: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 10px var(--color-text-4);
+  }
+}
+.recommend-column{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 2;
+  background-color: aqua;
+}
+</style>

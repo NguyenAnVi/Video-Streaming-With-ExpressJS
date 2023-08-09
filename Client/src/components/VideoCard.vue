@@ -1,24 +1,3 @@
-<template>
-    <div class="video-card" @click=goToVideo :data-video-id=videoId>
-      <div class="video-thumbnail-wrapper">
-        <img class="video-thumbnail" :src=videoThumbnailSrc alt="">
-      </div>
-      <div class="video-info">
-        <div>
-          <img class="author-avatar" :src=authorAvtSrc alt="">
-        </div>
-        <div class="video-properties">
-          <div class="video-title">{{title}}</div>
-          <div class="author-name">{{authorName}}</div>
-          <div class="video-stats">
-            <div class="views">{{ views }} views</div>
-            <div class="uploaded">{{ uploaded }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-</template>
-
 <script>
 export default {
   props:{
@@ -29,14 +8,30 @@ export default {
       authorName: String,
       views: String,
       uploaded: String
-  },
-  methods:{
-    goToVideo (){
-      this.$router.push('/watch/'+this.videoId)
-    }
   }
 }
 </script>
+
+<template>
+    <div class="video-card" :data-video-id=videoId>
+      <div class="video-thumbnail-wrapper" :data-video-id=videoId>
+        <img class="video-thumbnail" :src=videoThumbnailSrc alt="" :data-video-id=videoId>
+      </div>
+      <div class="video-info" :data-video-id=videoId>
+        <div :data-video-id=videoId>
+          <img class="author-avatar" :src=authorAvtSrc alt="" :data-video-id=videoId>
+        </div>
+        <div class="video-properties" :data-video-id=videoId>
+          <div class="video-title" :data-video-id=videoId>{{title}}</div>
+          <div class="author-name" :data-video-id=videoId>{{authorName}}</div>
+          <div class="video-stats" :data-video-id=videoId>
+            <div class="views" :data-video-id=videoId>{{ views }} views</div>
+            <div class="uploaded" :data-video-id=videoId>{{ uploaded }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+</template>
 
 <style scoped>
 .video-card{
@@ -58,8 +53,16 @@ export default {
     width: 100%;
   }
 }
-.video-thumbnail{
-  width: 100%;
+.video-thumbnail-wrapper{
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &>.video-thumbnail{
+    aspect-ratio: 16/9;
+    width: 100%;
+    object-fit: cover;
+  }
 }
 .video-info{
   display: flex;

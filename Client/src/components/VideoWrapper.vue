@@ -1,14 +1,14 @@
-<template>
-  <div class="video-wrapper">
-    <slot></slot>
-  </div>
-</template>
-
 <script>
 export default {
   name:"VideoWrapper",
 }
 </script>
+
+<template>
+  <div class="video-wrapper">
+    <slot></slot>
+  </div>
+</template>
 
 <style scoped>
 .video-wrapper{

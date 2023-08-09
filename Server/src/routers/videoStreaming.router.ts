@@ -1,8 +1,8 @@
 import { Router } from "express";
-import {streamVideo, getVideoProperties, getVideoPlayer} from "../controllers/videoStreaming.controller";
+import { getVideoProperties, getVideo, getThumbnail} from "../controllers/videoStreaming.controller";
 
 export default (router: Router) => {
   router.get("/getvideoproperties/:videoid", getVideoProperties);
-  router.get("/video", streamVideo);
-  router.get("/v", getVideoPlayer);
+  router.get("/getthumbnail/:imagename", getThumbnail);
+  router.get("/getvideo/:videoname", getVideo);
 };

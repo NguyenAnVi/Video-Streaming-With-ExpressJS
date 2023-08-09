@@ -1,7 +1,3 @@
-<template>
-  <input :="input">
-</template>
-
 <script>
 export default {
   name:"Input",
@@ -13,6 +9,10 @@ export default {
   }
 }
 </script>
+
+<template>
+  <input :="input">
+</template>
 
 <style scoped>
 input{

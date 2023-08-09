@@ -159,25 +159,24 @@ nav-sidebar {
   -ms-border-radius: 8px 0 0 8px;
   -o-border-radius: 8px 0 0 8px;
 }
-nav-sidebar > a {
+nav-sidebar > a , nav-sidebar > a:hover{
   border-radius: 8px 0 0 8px;
-
-  background-image: linear-gradient(to right, #ffffff8e , transparent);
-  transition: background-image .5s ease-in-out;
+  background-color: #d3d3d3;
+  transition: background-color .5s ease-in-out;
   display: flexbox;
   width: var(--sidebar-width);
   height: var(--sidebar-icon-width);
   align-items: center;
-  -webkit-transition: background-image .5s ease-in-out;
-  -moz-transition: background-image .5s ease-in-out;
-  -ms-transition: background-image .5s ease-in-out;
-  -o-transition: background-image .5s ease-in-out;
+  -webkit-transition: background-color .5s ease-in-out;
+  -moz-transition: background-color .5s ease-in-out;
+  -ms-transition: background-color .5s ease-in-out;
+  -o-transition: background-color .5s ease-in-out;
 }
 nav-sidebar > a.router-link-exact-active {
   box-shadow: 0 0 5px var(--color-background-5);
-  background-image: none;
-  background-color: #ffffffaa;
-  color: black;
+  background-image: linear-gradient(to right, #fff, #ffffffaa);
+  background-color: transparent;
+  border-top-left-radius: 300px;
   border-radius: 8px 0 0 8px;
   -webkit-border-radius: 8px 0 0 8px;
   -moz-border-radius: 8px 0 0 8px;

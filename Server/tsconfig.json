@@ -5,6 +5,7 @@
     "module": "ES2022",
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "*": ["./node_modules/*"],
     },
