@@ -92,6 +92,30 @@ export const getThumbnail = function (req, res) {
   
  
 }
+export const getRecommendedVideos = async function (req, res) {
+  const currentVideoForSuggesting = req.body.videoid as string;
+  await VideoModel
+    .find({})
+    .then((videoResults)=>{
+      if (videoResults) {
+        return res.status(200).json({
+          default:videoResults
+        })
+      } else {
+        return res.status(404).json({
+          message:"Video not found.",
+          video:null
+        })
+      }
+    })
+    .catch((err)=>{
+      return res.status(500).json({
+        message:err.message,
+        data:null
+      })
+    });
+
+}
 export const getVideoProperties = async function (req, res) {
   const id = req.params.videoid as string;
   await VideoModel

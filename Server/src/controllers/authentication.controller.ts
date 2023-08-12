@@ -31,7 +31,8 @@ export const signin = async (req: Request, res:Response, next: NextFunction) => 
                 result.save()
                 .then(()=>{
                   return res.json({
-                    name:result.fullName,
+                    fullName:result.fullName,
+                    avatar:result.avatar,
                     id:result._id,
                     phone:result.phone,
                     email:result.email,
@@ -50,7 +51,7 @@ export const signin = async (req: Request, res:Response, next: NextFunction) => 
   }
 }
 
-export  const signup = async (req: Request, res:Response, next:NextFunction):Promise<Response> => {
+export const signup = async (req: Request, res:Response, next:NextFunction):Promise<Response> => {
   const { phone, password, confirmPassword, name, email } = req.body;
   if (!email || !password || !name || !confirmPassword || !phone) {
     return res
@@ -72,7 +73,7 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
             .json({ message: 'Phone or email is in use' });
         } else {
           const user = new UserModel({
-            name ,
+            fullName:name ,
             phone,
             password,
             email
@@ -83,21 +84,17 @@ export  const signup = async (req: Request, res:Response, next:NextFunction):Pro
           user
             .save()
             .then((savedResult:UserDocument) => {
-              res.json({
+              return res.json({
                 status: true,
-                token
+                message:"Signup complete, from now you can signin with this account."
               })
             })
             .catch((err:Error) => {
-              res.status(500).json({
-                message:"Error while signin :"+err.message
+              return res.status(500).json({
+                message:"Error while register new account :"+err.message
               });
             })
         } // if (result) else
       } // function (result)
     ) // then
-}
-
-export const test = (req: any, res:any, next:NextFunction)=>{
-  return res.status(200).json({message:"Success"})
 }

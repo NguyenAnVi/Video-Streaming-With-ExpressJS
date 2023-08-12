@@ -18,15 +18,12 @@ export default {
         <img class="video-thumbnail" :src=videoThumbnailSrc alt="" :data-video-id=videoId>
       </div>
       <div class="video-info" :data-video-id=videoId>
-        <div :data-video-id=videoId>
-          <img class="author-avatar" :src=authorAvtSrc alt="" :data-video-id=videoId>
-        </div>
         <div class="video-properties" :data-video-id=videoId>
-          <div class="video-title" :data-video-id=videoId>{{title}}</div>
-          <div class="author-name" :data-video-id=videoId>{{'Author Name'}}</div>
+          <p class="video-title" :data-video-id=videoId>{{title}}</p>
+          <p class="author-name" :data-video-id=videoId>{{'Author Name'}}</p>
           <div class="video-stats" :data-video-id=videoId>
-            <div class="views" :data-video-id=videoId>{{ views }} views</div>
-            <div class="uploaded" :data-video-id=videoId>{{ uploaded }}</div>
+            <span class="views" :data-video-id=videoId>{{ views }} views</span>
+            <span class="uploaded" :data-video-id=videoId>{{ uploaded }}</span>
           </div>
         </div>
       </div>
@@ -35,52 +32,35 @@ export default {
 
 <style scoped>
 .video-card{
-  width: calc((100% / 3) - 24px);
-  padding: 8px;
+  padding: 0px;
   border-radius: 8px;
+
+  max-height: 100px;
   
   display: flex;
-  flex-direction: column;
+  gap: 16px;
   background-color: var(--color-background-1);
-
-  box-shadow: 0 0 0px var(--color-background-5);
-  transition-property: box-shadow, transform;
-  transition-duration: .2s;
-  transition-timing-function: ease-out;
-  box-shadow: 0 2px 5px var(--color-background-5);
-
   cursor: pointer;
-  
-  &:hover, &:focus {
-    box-shadow: 0 0 0 #ffffff00;
-    transform: scale(1.03);
-  }
-  @media (max-width:512px) {
-    width: 100%;
-  }
 }
 .video-thumbnail-wrapper{
-  overflow: hidden;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  overflow: hidden;
+
+  border-radius: 4px;
   box-shadow: 0 0 5px var(--color-background-4);
   &>.video-thumbnail{
-    aspect-ratio: 16/9;
-    width: 100%;
+    height: 100px;
+    width: 300px;
     object-fit: cover;
   }
 }
 .video-info{
   display: flex;
   width: 100%;
-  & > *:first-child{
-    flex-basis: 30px;
-    & .author-avatar{
-      width: 35px;
-      padding: 8px;
-    }
-  }
   & .video-properties{
     width: 100%;
     padding-block: 8px;
@@ -89,14 +69,27 @@ export default {
 
     & .video-title{
       font-weight: bolder;
-      width: 100%;
+
+      max-height: 2em;
+      line-height: 1em;
+
+      margin: 0;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
     }
     & .author-name{
+      margin: 0;
+      margin-top: 4pxq;
+      font-size: small;
       color: var(--color-text-4);
     }
     & .video-stats{
+      font-size: smaller;
       color: var(--color-text-4);
       display: flex;
+      gap: 8px;
     }
   }
 }

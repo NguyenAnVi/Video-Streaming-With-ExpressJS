@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue';
+import SettingsView from '@/views/SettingsView.vue';
 import AboutView from '@/views/AboutView.vue';
 import WatchView from '@/views/WatchView.vue';
 import NotFound from '@/views/NotFound.vue';
 import Signin from '@/views/authentication/Signin.vue';
 import Signup from '@/views/authentication/Signup.vue';
+import UploadView from '@/views/UploadView.vue';
 
 
 export const routes = [
@@ -34,6 +36,20 @@ export const routes = [
     path: '/signup',
     name: 'Signup',
     component: Signup
+  },
+  {
+    path: '/upload',
+    name: 'Upload',
+    icon: 'cloud-arrow-up',
+    showInSideBar: true,
+    component: UploadView
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    icon: 'gear',
+    showInSideBar: true,
+    component: SettingsView
   },
   {
     path: "/:pathMatch(.*)*",

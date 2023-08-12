@@ -31,7 +31,7 @@ export default {
   },
   created() {
     if (this.loggedIn) {
-      this.$router.push("/");
+      this.$router.go(-1);
     }
   },
   methods: {
@@ -40,7 +40,7 @@ export default {
 
       this.$store.dispatch("auth/login", user).then(
         () => {
-          this.$router.push("/");
+          this.$router.go(-1);
         },
         (error) => {
           this.loading = false;
@@ -93,7 +93,7 @@ export default {
 
 <style scoped>
 #form-wrapper{
-  background-color: var(--color-background-2);
+  background-color: #00000000;
   width: 100%;
   height: 100%;
   display: flex;

@@ -3,9 +3,9 @@ import { Suspense } from "vue";
 import { routes as routerRoutes } from "./router";
 import { RouterLink, RouterView } from "vue-router";
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faUser, faArrowRightFromBracket, faHouse } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUser, faArrowRightFromBracket, faHouse, faCloudArrowUp, faGear } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faBars, faUser, faArrowRightFromBracket, faHouse);
+library.add(faBars, faUser, faArrowRightFromBracket, faHouse, faCloudArrowUp, faGear);
 
 export default {
   components:{
@@ -59,6 +59,7 @@ export default {
   methods: {
     logOut() {
       this.$store.dispatch('auth/logout');
+      this.$store.state.auth.user = undefined;
       this.$router.push('/');
     }
   }
@@ -85,13 +86,9 @@ export default {
       <nav-navbar>
         <RouterLink v-if="!currentUser" to="/signin">Signin</RouterLink>
         <RouterLink v-if="!currentUser" to="/signup">Signup</RouterLink>
-        <RouterLink v-if="currentUser" to="/" class="nav-link">
-          <font-awesome-icon icon="user" size="lg" />
-          Profile: {{ currentUser.name }}
-        </RouterLink>
         <a v-if="currentUser" class="nav-link" @click.prevent="logOut">
           <font-awesome-icon icon="arrow-right-from-bracket" /> 
-          LogOut
+          LogOut ({{ currentUser.fullName }})
         </a>
       </nav-navbar>
     </div>
@@ -147,7 +144,7 @@ export default {
 }
 #header, #body, #footer{
   box-sizing: border-box;
-  box-shadow: 0 0 2px var(--color-background-3);
+  /* box-shadow: inset 0 0 3px var(--color-background-5); */
   border-radius: 8px;
 }
 #header {
@@ -180,8 +177,6 @@ export default {
   overflow: hidden;
 
   background-color: transparent;
-  backdrop-filter: blur(10px);
-
   min-height: calc(100vh - var(--header-height) - var(--footer-height) - 48px);
 }
 #sidebar{
@@ -189,18 +184,22 @@ export default {
   overflow: hidden;
   min-width: var(--sidebar-icon-width);
   width: var(--sidebar-icon-width);
+  margin-right: 8px;
+  background-color: #00000077;
+
+  backdrop-filter: blur(10px);
+
   transition-property: width, min-width;
   transition-duration: .5s;
   transition-timing-function: ease-in-out;
 }
 #sidebar.opened, #sidebar:hover{
-  min-width: var(--sidebar-width) !important;
-  width: var(--sidebar-width) !important;
+  min-width: var(--sidebar-width);
+  width: var(--sidebar-width);
 }
 #content{
-  background-color: #ffffffaa;
-}
-#body > #content {
+  background-color: #00000077;
+  backdrop-filter: blur(10px);
   width: calc(100% - var(--sidebar-icon-width));
 }
 #footer {
@@ -287,24 +286,30 @@ nav-sidebar {
   -ms-border-radius: 8px 0 0 8px;
   -o-border-radius: 8px 0 0 8px;
 }
-nav-sidebar > a , nav-sidebar > a:hover{
+nav-sidebar > a {
   border-radius: 8px 0 0 8px;
-  background-color: #d3d3d3;
-  transition: background-color .5s ease-in-out;
+  background-color: #ffffff88;
   display: flexbox;
   width: var(--sidebar-width);
   height: var(--sidebar-icon-width);
   align-items: center;
-  -webkit-transition: background-color .5s ease-in-out;
-  -moz-transition: background-color .5s ease-in-out;
-  -ms-transition: background-color .5s ease-in-out;
-  -o-transition: background-color .5s ease-in-out;
+  transition-property: background-color, height;
+  transition-duration: .2s;
+  transition-timing-function: ease-in-out;
+
+  &:hover{
+    z-index: 2;
+  }
+  &:focus{
+    z-index: 1;
+  }
+  &:hover, &:focus, &.router-link-exact-active{
+    height: calc(var(--sidebar-icon-width) + 16px);
+    box-shadow: 0 0 5px var(--color-background-5);
+    background-color: #fff;
+  }
 }
 nav-sidebar > a.router-link-exact-active {
-  box-shadow: 0 0 5px var(--color-background-5);
-  background-image: linear-gradient(to right, #fff, #ffffffaa);
-  background-color: transparent;
-  border-top-left-radius: 300px;
   border-radius: 8px 0 0 8px;
   -webkit-border-radius: 8px 0 0 8px;
   -moz-border-radius: 8px 0 0 8px;

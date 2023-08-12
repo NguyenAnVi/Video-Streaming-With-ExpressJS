@@ -141,7 +141,7 @@ export default {
 
 <style scoped>
 #form-wrapper{
-  background-color: var(--color-background-2);
+  background-color: #00000000;
   width: 100%;
   height: 100%;
   display: flex;

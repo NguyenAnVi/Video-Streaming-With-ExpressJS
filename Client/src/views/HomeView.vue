@@ -49,8 +49,18 @@ export default {
     VideoWrapper,
   },
   methods:{
-    calcDate: ()=>{
-      return "3h ago";
+    calcDate: (d)=>{
+      const now = Date.now();
+      const videoDate = new Date(d);
+      var diff = Math.abs(now - videoDate);
+      var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+      var months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+      var days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      if(years) return `${years} ${(years===1)?('year'):('years')} ago`;
+      if(months) return `${months} ${(months===1)?('month'):('months')} ago`;
+      if(days) return `${days} ${(days===1)?('day'):('days')} ago`;
+      if(hours) return `${hours} ${(hours===1)?('hour'):('hours')} ago`;
     },
     goToVideo(event) {
       const id = event.target.getAttribute('data-video-id');
@@ -80,8 +90,8 @@ export default {
         authorAvtSrc="http://localhost:3001/account.png" 
         :videoThumbnailSrc="video.thumbnail"
         :title="video.title"
-        views="3000"
-        uploaded=calcDate()
+        :views="video.views"
+        :uploaded="calcDate(video.uploaded_at)"
         @click.prevent="goToVideo($event)"
       />
     </VideoWrapper>
