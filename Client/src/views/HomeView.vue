@@ -67,11 +67,11 @@ export default {
       this.$router.push(`/watch${(id)?('?v='+id):''}`);
     }
   },
-  data(){
-    return {
+  async created(){
+    const toast = useToast();
+    if( this.$store.getters['notification/hasNotification']){
+      toast(this.$store.state.notification.message, {type:this.$store.state.notification.type});
     }
-  },
-  mounted(){
   }
 }
 </script>

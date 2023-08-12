@@ -6,6 +6,7 @@ import { Form, Field, ErrorMessage } from "vee-validate";
 const toast = useToast(); 
 
 export default {
+  
   name: "Login",
   components: {
     Form,
@@ -31,7 +32,12 @@ export default {
   },
   created() {
     if (this.loggedIn) {
-      this.$router.go(-1);
+      this.$store.dispatch('notification/createNotification', {
+        message:"Already signed in",
+        type:"success"
+      }).then(()=>{
+        this.$router.push("/")
+      });
     }
   },
   methods: {

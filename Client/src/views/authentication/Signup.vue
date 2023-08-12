@@ -55,7 +55,12 @@ export default {
   },
   mounted() {
     if (this.loggedIn) {
-      this.$router.push("/signin");
+      this.$store.dispatch('notification/createNotification', {
+        message:"Already signed in",
+        type:"success"
+      }).then(()=>{
+        this.$router.push("/");
+      });
     }
   },
   methods: {
