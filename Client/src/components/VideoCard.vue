@@ -35,36 +35,32 @@ export default {
 
 <style scoped>
 .video-card{
-  width: calc((100% / 3) - 24px);
-  padding: 8px;
-  border-radius: 8px;
+  width: calc((100% / 6) - 14px);
   
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background-1);
+  background-color: transparent;
 
-  box-shadow: 0 0 0px var(--color-background-5);
-  transition-property: box-shadow, transform;
+  transition-property: transform;
   transition-duration: .2s;
   transition-timing-function: ease-out;
-  box-shadow: 0 2px 5px var(--color-background-5);
 
   cursor: pointer;
+
+  box-sizing: border-box;
   
   &:hover, &:focus {
-    box-shadow: 0 0 0 #ffffff00;
     transform: scale(1.03);
   }
-  @media (max-width:512px) {
-    width: 100%;
-  }
+  
 }
 .video-thumbnail-wrapper{
   overflow: hidden;
   display: flex;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 5px var(--color-background-4);
+  box-shadow: 0 0 5px var(--color-background-5);
   &>.video-thumbnail{
     aspect-ratio: 16/9;
     width: 100%;
@@ -92,13 +88,23 @@ export default {
       width: 100%;
     }
     & .author-name{
-      color: var(--color-text-4);
+      color: var(--color-text-3);
     }
     & .video-stats{
-      color: var(--color-text-4);
+      color: var(--color-text-3);
       display: flex;
+      flex-wrap: wrap;
     }
   }
 }
-
+@media only screen and (max-width:1800px){
+  .video-card{
+    width: calc((100% / 4) - 12px);
+  }
+}
+@media only screen and (max-width:1024px){
+  .video-card{
+    width: calc((100% / 3) - 11px);
+  }
+}
 </style>

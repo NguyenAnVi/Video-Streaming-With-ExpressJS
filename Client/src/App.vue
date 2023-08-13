@@ -198,9 +198,10 @@ export default {
   width: var(--sidebar-width);
 }
 #content{
-  background-color: #00000077;
+  flex-shrink:0;
+  background-color: #ffffff77;
   backdrop-filter: blur(10px);
-  width: calc(100% - var(--sidebar-icon-width));
+  width:  calc(100% - var(--sidebar-icon-width) - 8px)
 }
 #footer {
   height: var(--footer-height);

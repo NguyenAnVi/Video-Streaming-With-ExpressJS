@@ -12,10 +12,9 @@ export default {
 
 <style scoped>
 .video-wrapper{
-  padding: 16px 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  row-gap: 12px;
+  gap: 16px;
+  row-gap: 16px;
 }
 </style>

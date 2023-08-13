@@ -2,7 +2,7 @@
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { reactive } from "vue";
+import { reactive, watchEffect } from "vue";
 import VideoPlayer from "../components/VideoPlayer.vue";
 import VideoCardHorizontal from '../components/VideoCardHorizontal.vue';
 
@@ -21,45 +21,44 @@ export default {
     const route = useRoute();
     const store = useStore();
 
-    // get Current Video
     var video = reactive({
       id:"",
       props:{}
     });
-    video.id = route.query.v;
-    await store.dispatch("video/getVideoProperties", {
-      id:video.id
-    })
-    .then(
-      response=>{
-        video.props = response.data.video;
-      }
-    )
-    .catch(
-      error=>{
-        toast(error.message, {type:"error"});
-        video.props = {};
-      }
-    );
-
-    // get Recommended Videos
     var recommendedVideos = reactive({});
-    await store.dispatch("video/getRecommendedVideos", {
-      currentVideo:video.props
-    })
-    .then(
-      response=>{
-        recommendedVideos = JSON.parse(JSON.stringify(response.data)) ;
-        console.log(recommendedVideos);
-      }
-    )
-    .catch(
-      error=>{
-        toast(error.message, {type:"error"});
-        recommendedVideos = {};
-      }
-    );
 
+    video.id = route.query.v;
+      // get Current Video
+      await store.dispatch("video/getVideoProperties", {
+        id:video.id
+      })
+      .then(
+        response=>{
+          video.props = response.data.video;
+        }
+      )
+      .catch(
+        error=>{
+          toast(error.message, {type:"error"});
+          video.props = {};
+        }
+      );
+
+      // get Recommended Videos
+      await store.dispatch("video/getRecommendedVideos", {
+        currentVideo:video.props
+      })
+      .then(
+        response=>{
+          recommendedVideos = JSON.parse(JSON.stringify(response.data)) ;
+        }
+      )
+      .catch(
+        error=>{
+          toast(error.message, {type:"error"});
+          recommendedVideos = {};
+        }
+      );
     return { video, recommendedVideos };
   },
   methods:{
@@ -76,70 +75,86 @@ export default {
       if(days) return `${days} ${(days===1)?('day'):('days')} ago`;
       if(hours) return `${hours} ${(hours===1)?('hour'):('hours')} ago`;
     },
+    goToVideo(event) {
+      const id = event.target.getAttribute('data-video-id');
+      location.assign(`/watch${(id)?('?v='+id):''}`);
+    }
   }
 }
 </script>
 <template>
-  <div class="content-wrapper">
-    <div class="video-column">
-      <div class="video-wrapper">
-          <!-- <VideoPlayer ref="videoplayer" :key="this.allowRender" v-if="allowRender" videoId="videoId" :src.sync="this.getVideoSource" :title.sync="this.getVideoTitle" :cover.sync="this.getVideoCover"/> -->
-          <VideoPlayer :properties="this.video.props"/>
-      </div>
-
-      <!-- descriptions here -->
-      <div class="video-descriptions">
-        <h2>{{ this.video.props.title }}</h2>
-        <div class="author-wrapper">
-          <div class="author-avatar-wrapper">
-            <img class="author-avatar" src="http://localhost:3001/account.png">
-          </div>
-          <div class="author-name">
-            Nguyen An Vi
-          </div>
+  <div class="wrapper">
+    <div class="content-wrapper">
+      <div class="video-column">
+        <div class="video-wrapper">
+            <!-- <VideoPlayer ref="videoplayer" :key="this.allowRender" v-if="allowRender" videoId="videoId" :src.sync="this.getVideoSource" :title.sync="this.getVideoTitle" :cover.sync="this.getVideoCover"/> -->
+            <VideoPlayer :properties="this.video.props"/>
         </div>
-        <div class="description-wrapper">
-          <div class="video-stats">
-            <div>{{ this.video.props.views }} views</div> 
-            <div>{{ this.calcDate(this.video.props.uploaded_at) }}</div>
-            <div>
-              <span class="hashtags" v-for="i in 4" :key="i">{{ (Math.random() + 1).toString(36).substring(7) }}</span>
+
+        <!-- descriptions here -->
+        <div class="video-descriptions">
+          <h2>{{ this.video.props.title }}</h2>
+          <div class="author-wrapper">
+            <div class="author-avatar-wrapper">
+              <img class="author-avatar" src="http://localhost:3001/account.png">
+            </div>
+            <div class="author-name">
+              Nguyen An Vi
             </div>
           </div>
-          <div class="description-content" v-html="this.video.props.description"></div>
+          <div class="description-wrapper">
+            <div class="video-stats">
+              <div>{{ this.video.props.views }} views</div> 
+              <div>{{ this.calcDate(this.video.props.uploaded_at) }}</div>
+              <div>
+                <span class="hashtags" v-for="i in 4" :key="i">{{ (Math.random() + 1).toString(36).substring(7) }}</span>
+              </div>
+            </div>
+            <div class="description-content" v-html="this.video.props.description"></div>
+          </div>
         </div>
+        <!-- comments here -->
       </div>
-      <!-- comments here -->
+      <div class="recommend-column">
+        <VideoCardHorizontal
+          v-for="video in recommendedVideos.default"
+          :data-video-id="video._id"
+          :videoId="video._id" 
+          authorAvtSrc="http://localhost:3001/account.png" 
+          :videoThumbnailSrc="video.thumbnail"
+          :title="video.title"
+          :views="video.views"
+          :uploaded="calcDate(video.uploaded_at)"
+          @click.prevent="goToVideo($event)"
+        />
+      </div>
     </div>
-    <div class="recommend-column">
-      <VideoCardHorizontal
-        v-for="video in recommendedVideos.default"
-        :data-video-id="video._id"
-        :videoId="video._id" 
-        authorAvtSrc="http://localhost:3001/account.png" 
-        :videoThumbnailSrc="video.thumbnail"
-        :title="video.title"
-        :views="video.views"
-        :uploaded="calcDate(video.uploaded_at)"
-        @click.prevent="goToVideo($event)"
-      />
-    </div>
+    <div class="sidebar-parallel"></div>
   </div>
 </template>
 
 
 <style scoped>
+.wrapper{
+  display: flex;
+  margin: 0;
+}
 .content-wrapper{
+  max-width: 1600px;
+
   display: flex;
   gap: 16px;
-  padding-left: 16px;
+  padding: 16px 0 16px 16px;
   height: 100%;
 }
-
+.sidebar-parallel{
+  width: var(--sidebar-icon-width);
+  margin-left: 8px;
+}
 .video-column{
+  padding-top: 16px;
   display: flex;
   width: 100%;
-  flex-grow: 3;
   flex-direction: column;
   & .video-wrapper{
     border-radius: 8px;
@@ -177,12 +192,12 @@ export default {
 }
 .recommend-column{
   display: flex;
+  padding: 16px;
   flex-direction: column;
-  flex-basis: 316px;
+  flex-basis: 480px;
   gap: 8px;
-  width: 316px;
   &>*{
-    max-width: 316px;
+    max-width: 444px;
   }
 }
 .hashtags{
