@@ -43,7 +43,7 @@ export default {
 
 <template>
   <div class="custom-select" :name="selectOptions.optionName" :id="selectOptions.optionId" :disabled="selectDisabled">
-    <a href="#" class="select-label">{{ selectOptions.optionName }} (current: "{{ currentSelected }}")</a>
+    <a href="#" class="select-label">{{ currentSelected?currentSelected:selectOptions.optionName }}</a>
     <ul>
       <li @click="selectOption" v-for="(option, index) in selectOptions.options" :selectId="option.value" :key="index" :d-value="option.value" :selected="option.selected">
         {{option.label}}
@@ -54,16 +54,23 @@ export default {
 
 <style scoped>
 .custom-select{
-  display: block;
+  width: 200px;
   margin: 0;
+
+  display: block;
   overflow: hidden;
+
   transition-property: border-radius;
   transition-duration: .3s;
   transition-timing-function: ease-out;
-  & .select-label{
-    display: block;
+  & > .select-label{
+    text-align: center;
+    height: 25px;
     padding: 10px 20px;
-    min-width: 140px;
+
+    display: flex;
+    justify-content: center;
+
     color: #000;
     background-color: #ffffff92;
     &:hover{
@@ -71,29 +78,36 @@ export default {
     }
   }
 
-  & ul{
+  & > ul{
     padding: 0px;
     margin: 0;
     display: none;
     list-style: none;
     position: absolute;
     & li{
-      display: block;
-      padding: 10px 20px;
+      height: 25px;
+      display: flex;
+      padding: 10px 10px;
       margin: 0;
       width: 100%;
       position: relative;
       float: none; 
-
+      
+      cursor: pointer;
+      
+      border-radius: 4px;
       background-color: #ffffff66;
       color: #000;
-      border-radius: 4px;
       &[selected=true]{
         color: #080;
         background-color: #ddd;
         font-weight: bold;
+
         &::before{
-          content: "✔ ";
+          display: inline-block;
+          width: 24px;
+          text-align: center;
+          content: "✔";
         }
       }
     }
@@ -102,7 +116,8 @@ export default {
   &:hover{
     border-radius: 4px;
     & > ul{
-      display: block;
+      display: flex;
+      flex-direction: column;
       & > li:hover{
         background-color: #fff;
       }

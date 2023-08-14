@@ -1,6 +1,7 @@
 import cors from "cors";
 import path from 'path';
 import express from "express";
+import bodyParser from "body-parser";
 import router from "./routers/index";
 import Locals from "./providers/locals";
 import {Database} from "./providers/database";
@@ -13,6 +14,8 @@ const __dirname = fileURLToPath(import.meta.url);
 Database.init();
 
 app.use(cors());
+app.use(bodyParser.json({limit:'1gb'}));
+app.use (express.static ('public'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));

@@ -9,13 +9,14 @@ library.add(faBars, faUser, faArrowRightFromBracket, faHouse, faCloudArrowUp, fa
 
 export default {
   components:{
-    navNavbar: "nav-navbar",
-    navSidebar: "nav-sidebar",
-    Suspense
+    NavNavbar:'nav-navbar',
+    NavSidebar:'nav-sidebar',
+    Suspense,
   },
   data(){
     return{
-      routerRoutes
+      routerRoutes,
+      avtSrc: "http://localhost:3001/account.png",
     }
   },
   mounted: ()=>{
@@ -57,10 +58,34 @@ export default {
     }
   },
   methods: {
+    isValidImage(url) {
+      return new Promise((resolve, reject) => {
+          let image = new Image();
+          image.onload = () => resolve(true);
+          image.onerror = () => resolve(false);
+          image.src = url;
+      });
+    },
     logOut() {
       this.$store.dispatch('auth/logout');
       this.$store.state.auth.user = undefined;
       this.$router.push('/');
+    },
+    updateAvatar(){
+      const newAvtSrc = JSON.parse(localStorage.getItem('user')).avatar;
+      this.isValidImage(newAvtSrc).then(isValid => {
+        if (isValid) {
+          // The image is valid
+          this.avtSrc = newAvtSrc;
+
+        } else {
+          // The image is not valid
+          this.avtSrc = "http://localhost:3001/account.png";
+        }
+      });
+      console.log(this.avtSrc);
+      console.log(this.$refs.useravatar);
+      // this.$refs.useravatar.src = this.avtSrc;
     }
   }
 }
@@ -84,12 +109,38 @@ export default {
         <input type="text" name="search" id="search" placeholder="Search ...">
       </div>
       <nav-navbar>
-        <RouterLink v-if="!currentUser" to="/signin">Signin</RouterLink>
-        <RouterLink v-if="!currentUser" to="/signup">Signup</RouterLink>
-        <a v-if="currentUser" class="nav-link" @click.prevent="logOut">
-          <font-awesome-icon icon="arrow-right-from-bracket" /> 
-          LogOut ({{ currentUser.fullName }})
-        </a>
+        
+        <div class="user-menu" v-if="!currentUser">
+          <div class="menu-label">
+            <img class="user-avatar" src="http://localhost:3001/account.png" alt="">
+            <a href="#" class="user-text">Signin/Signup</a>
+          </div>
+          <ul>
+            <li>
+              <RouterLink v-if="!currentUser" to="/signin">Signin</RouterLink>
+            </li>
+            <li>
+              <RouterLink v-if="!currentUser" to="/signup">Signup</RouterLink>
+            </li>
+          </ul>
+        </div>
+        <div class="user-menu" v-if="currentUser">
+          <div class="menu-label">
+            <img ref="useravatar" class="user-avatar" :src="avtSrc" alt="">
+            <a href="#" class="user-text">{{ currentUser.fullName }}</a>
+
+          </div>
+          <ul>
+            <li>
+              <RouterLink to="/settings">
+                <div>Settings</div>
+              </RouterLink>
+            </li>
+            <li @click="logOut">
+              Sign Out
+            </li>
+          </ul>
+        </div>
       </nav-navbar>
     </div>
     <div id="body">
@@ -103,7 +154,7 @@ export default {
       </div>
       <div id="content">
         <Suspense>
-          <RouterView />
+          <RouterView @updateAvatar="updateAvatar" />
         </Suspense>
       </div>
      </div>
@@ -157,18 +208,150 @@ export default {
   line-height: 1.5;
 
   background-color: var(--color-background-1);
-}
-#header > *{
-  display: flex;
-  align-items: center;
-  flex: 1 0 0px ;
-  gap: 8px;
-  justify-content: center;
-  &:first-child{
-    justify-content: start;
+
+  & > *{
+    display: flex;
+    align-items: center;
+    flex: 1 0 0px ;
+    gap: 8px;
+    justify-content: center;
+    &:first-child{
+      justify-content: start;
+    }
+    & > #search{
+      width: 100%;
+      padding: 8px 24px;
+      background-color: transparent;
+      transition: (transform, padding) .5s ease-in-out;
+      font-size: 12px;
+      line-height: 8px;
+      color: #575756;
+      background-color: transparent;
+      background-image:url(./assets/search.svg);
+      background-repeat: no-repeat;
+      background-size: 18px 18px;
+      background-position: 95% center;
+      border-radius: 50px;
+      border: 1px solid #575756;
+      transition: all 250ms ease-in-out;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      -webkit-transition: (transform, padding) .5s ease-in-out;
+      -moz-transition: (transform, padding) .5s ease-in-out;
+      -ms-transition: (transform, padding) .5s ease-in-out;
+      -o-transition: (transform, padding) .5s ease-in-out;
+      -webkit-border-radius: 50px;
+      -moz-border-radius: 50px;
+      -ms-border-radius: 50px;
+      -o-border-radius: 50px;
+    }
+    & > #search::placeholder{
+      color: rgba(87, 87, 86, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    & > #search:hover, #search:focus{
+      padding: 12px 12px;
+      outline: 0;
+      border: 1px solid transparent;
+      border-bottom: 1px solid #575756;
+      border-radius: 0;
+      background-position: 100% center;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      -ms-border-radius: 0;
+      -o-border-radius: 0;
+    }
   }
-  &:last-child{
+
+  & > nav-navbar{
     justify-content: end;
+    display: block;
+    & > *{
+      float: right;
+      background-color: var(--color-background-2);
+      border-radius: 8px;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      -ms-border-radius: 8px;
+      -o-border-radius: 8px;
+      border: 1px solid var(--color-text-1);
+    }
+    & > .user-menu{
+      width: 140px;
+      height: 30px;
+      display: block;
+      overflow: hidden;
+      
+      &>*{
+        z-index: 10;
+        width: inherit;
+        height: inherit;
+      }
+
+      & > .menu-label{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        gap: 4px;
+
+        & > .user-avatar{
+          border-radius: 50%;
+          overflow: hidden;
+          width: 25px;
+          height: 25px;
+          padding: 5px;
+        }
+        & > .user-text{
+          text-align: center;
+          color: #000;
+          flex-grow: 1;
+        }
+      }
+      & > ul{
+        height: auto;
+        padding: 0;
+        margin: 0;
+        display: none;
+        list-style: none;
+        border-radius: 8px;
+        border: 1px solid black;
+        position: absolute;
+        background-color: #080;
+        transition-property: transform;
+        transition-duration: .2s;
+        transition-timing-function: ease-in-out;
+
+        & > li{
+          padding: 4px 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          background-color: #ffffff;
+          color: #000;
+          &:first-child{
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+          }
+          &:last-child{
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+        }
+      }
+      &:hover{
+        & > ul{
+          display: flex;
+          flex-direction: column;
+          & > li:hover{
+            color: #fff;
+            background-color: #000000;
+          }
+        }
+      }
+    }
   }
 }
 #body {
@@ -213,60 +396,8 @@ export default {
   grid-column: 3;
   align-items: end;
 }
-#search{
-  width: 100%;
-  padding: 8px 24px;
-  background-color: transparent;
-  transition: (transform, padding) .5s ease-in-out;
-  font-size: 12px;
-  line-height: 8px;
-  color: #575756;
-  background-color: transparent;
-  background-image:url(./assets/search.svg);
-  background-repeat: no-repeat;
-  background-size: 18px 18px;
-  background-position: 95% center;
-  border-radius: 50px;
-  border: 1px solid #575756;
-  transition: all 250ms ease-in-out;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-  -webkit-transition: (transform, padding) .5s ease-in-out;
-  -moz-transition: (transform, padding) .5s ease-in-out;
-  -ms-transition: (transform, padding) .5s ease-in-out;
-  -o-transition: (transform, padding) .5s ease-in-out;
-  -webkit-border-radius: 50px;
-  -moz-border-radius: 50px;
-  -ms-border-radius: 50px;
-  -o-border-radius: 50px;
-}
-#search::placeholder{
-  color: rgba(87, 87, 86, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-}
-#search:hover, #search:focus{
-  padding: 12px 12px;
-  outline: 0;
-  border: 1px solid transparent;
-  border-bottom: 1px solid #575756;
-  border-radius: 0;
-  background-position: 100% center;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -ms-border-radius: 0;
-  -o-border-radius: 0;
-}
-nav-navbar > *{
-  padding: 3px 16px;
-  background-color: var(--color-background-2);
-  border-radius: 20px;
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  -ms-border-radius: 20px;
-  -o-border-radius: 20px;
-  border: 1px solid var(--color-text-1);
-}
+
+
 
 .logo {
   width: var(--icon-width);

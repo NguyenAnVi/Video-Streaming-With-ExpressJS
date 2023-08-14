@@ -1,58 +1,61 @@
 <script>
-import {useStore} from 'vuex';
-import { useToast } from 'vue-toastification';
-import { reactive, toRefs, watchEffect } from 'vue';
-import Switcher from '../components/Switcher.vue';
+import * as yup from "yup";
 import Select from '../components/Select.vue';
+import { useToast } from 'vue-toastification';
+import Switcher from '../components/Switcher.vue';
+import UploadImage from "../components/UploadImage.vue";
+import { Form, Field, ErrorMessage } from "vee-validate";
+
+const toast = useToast();
 
 export default {
-  setup(){
-    const toast = useToast();
-    const store = useStore();
-    const state = reactive({
-      scroller: null,
-      scrollLeft: 0,
-    });
-
-    const onWheel = (e) => {
-      state.scrollLeft = state.scroller
-        ? min(
-            state.scroller.scrollWidth - state.scroller.offsetWidth,
-            max(0, e.deltaY + state.scrollLeft)
-          )
-        : state.scrollLeft;
-    };
-    const video = reactive({
-      videos :[]
-    });
-
-    watchEffect( async function (){
-      await store.dispatch("video/getVideosForHomePage")
-      .then(
-        response=>{
-          video.videos = response.videos;
-        }
-      )
-      .catch(
-        error=>{
-          toast(error.message, {type:"error"});
-          video.videos = null;
-        }
-      );
-    });
-    
-    return { video, ...toRefs(state), onWheel };
-  },
   components:{
     Switcher,
-    Select
-  },
-  methods:{
-    currentUser() {
-      return this.$store.state.auth.user;
-    },
+    Select,
+    Form,
+    Field,
+    ErrorMessage,
+    UploadImage
   },
   data(){
+    const schema = yup.object().shape({
+      name: yup
+        .string()
+        .min(3, "Must be at least 3 characters!")
+        .max(20, "Must be maximum 20 characters!"),
+      phone: yup
+        .string()
+        .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Phone number is not valid'),
+      email: yup
+        .string()
+        .email("Email is invalid!")
+        .max(50, "Must be maximum 50 characters!"),
+      newpassword: yup
+        .string()
+        .min(0, "Must be at least 6 characters!")
+        .max(40, "Must be maximum 40 characters!"),
+      currentpassword: yup
+        .string()
+        .when('password', {
+          is: (val) => (val && val.length > 0 ? true : false),
+          then: yup
+            .string()
+            .required("Current Password is required!")
+            .min(6, "Must be at least 6 characters!")
+            .max(40, "Must be maximum 40 characters!")
+        }),
+      confirmnewpassword: yup
+        .string()
+        .when('password', {
+          is: (val) => (val && val.length > 0 ? true : false),
+          then: yup
+            .string()
+            .required("Confirm Password is required!")
+            .min(6, "Must be at least 6 characters!")
+            .max(40, "Must be maximum 40 characters!")
+            .oneOf( [yup.ref('password')] , 'Passwords must match')
+        })
+    });
     return {
       selectOptions:{
         optionName:"Language",
@@ -78,18 +81,83 @@ export default {
             label:"Choose one...",
           }
         ]
-      }
+      },
+      successful: false,
+      loading: false,
+      message: "",
+      schema,
+      avtSrc:""
     }
   },
-  mounted(){
+  methods:{
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    handleUpdateProfile(user) {
+      this.message = "";
+      this.successful = false;
+      this.loading = true;
+
+      this.$store.dispatch("auth/updateprofile", user).then(
+        (data) => {
+          this.message = data.message;
+          this.successful = true;
+          this.loading = false;
+          toast(this.message);
+        },
+        (error) => {
+          this.message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message || error.toString();
+            toast(this.message, {type:"error"});
+          this.successful = false;
+          this.loading = false;
+        }
+      );
+    },
+    saveSrc(imgSrc){
+      console.log("atSettingViews");
+      this.avtSrc = imgSrc;
+      this.$refs.newavatar.value = imgSrc;
+      console.log(this.avtSrc);
+    },
+    handleUpdateAvatar(){
+      this.message = "";
+      this.successful = false;
+      this.loading = true;
+
+      const payload = {avatar: this.avtSrc}
+      console.log(payload);
+      this.$store.dispatch("auth/updateavatar", payload).then(
+        (data) => {
+          this.message = data.message;
+          this.successful = true;
+          this.loading = false;
+          this.$emit('updateAvatar');
+          toast(this.message);
+        },
+        (error) => {
+          this.message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message || error.toString();
+            toast(this.message, {type:"error"});
+          this.successful = false;
+          this.loading = false;
+        }
+      );
+    }
   }
 }
 </script>
 
 <template>
   <main>
-    <h1>Settings</h1>
     <div class="settings-wrapper">
+      <h1>Settings</h1>
       <div class="settings-section">
         <h2>Site preferences</h2>
         <div class="settings">
@@ -112,22 +180,65 @@ export default {
           </div>
         </div>
       </div>
-      <div class="settings-section" v-if="!currentUser">
+      <div class="settings-section" v-if="currentUser">
         <h2>Account</h2>
-        <div class="settings">
+        <Form ref="form" @submit="handleUpdateProfile" :validation-schema="schema" class="settings">
           <div class="setting-cell">
-            <RouterLink to="/signin">Signin</RouterLink>
+            <label for="name">Name</label>
+            <!-- <input type="text" name="name" id="name"> -->
+            <Field name="name" type="text" id="name" />
+            <ErrorMessage name="name" class="error-feedback" />
+          </div>
+          <div class="setting-cell">
+            <label for="phone">Phone</label>
+            <Field name="phone" type="tel" id="phone" />
+            <ErrorMessage name="phone" class="error-feedback" />
           </div>
           <div class="setting-cell">
             <label for="email">Email</label>
-            <input type="email" name="email" id="email">
+            <Field type="email" name="email" id="email"/>
+            <ErrorMessage name="email" class="error-feedback"/>
           </div>
           <div class="setting-cell">
-            <input type="submit" >
+            <label for="emcurrentpasswordail">Current password</label>
+            <Field type="password" name="currentpassword" id="currentpassword"/>
+            <ErrorMessage name="currentpassword" class="error-feedback" />
           </div>
-        </div>
+          <div class="setting-cell">
+            <label for="newpassword">New password</label>
+            <Field type="password" name="newpassword" id="newpassword"/>
+            <ErrorMessage name="newpassword" class="error-feedback" />
+          </div>
+          <div class="setting-cell">
+            <label for="confirmnewpassword">Confirm password</label>
+            <Field type="password" name="confirmnewpassword" id="confirmnewpassword"/>
+            <ErrorMessage name="confirmnewpassword" class="error-feedback" />
+          </div>
+          <div class="setting-cell">
+            <label for=""></label>
+            <button :disabled="loading">
+              <div
+                v-show="loading"
+                class="lds-ring"
+              ><div></div><div></div><div></div><div></div></div>
+              Apply changes
+            </button>
+          </div>
+        </form>
+        <Form @submit="handleUpdateAvatar" class="settings">
+          <UploadImage @onSrcChange="saveSrc"></UploadImage>
+          <Field ref="newavatar" type="hidden" name="newavatar" :value="avtSrc"/>
+          <button :disabled="loading" id="submit-avatar">
+            <div
+              v-show="loading"
+              class="lds-ring"
+            ><div></div><div></div><div></div><div></div></div>
+            Crop and save
+          </button>
+        </Form>
       </div>
     </div>
+    <div class="sidebar-parallel"></div>
   </main>
 </template>
 
@@ -136,31 +247,32 @@ export default {
   color: #fff;
   background-color: transparent;
 }
-input{
-  width: fit-content;
-}
-select{
-  background-color: transparent;
-  & > option{
-    padding: 8px;
-    appearance: none;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    background-color: transparent;
-  }
-}
 main{
-  padding-inline: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+.settings-wrapper{
+  max-width: 1800px;
+  padding: 16px;
+
   & > h1:first-child{
     margin-inline: 16px;
     margin-top: 50px;
     margin-bottom: 16px;
   }
-}
-.settings-wrapper{
+
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.sidebar-parallel{
+  width: var(--sidebar-icon-width);
+  margin-left: 8px;
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 }
 .settings-section{
   background-color: rgba(0, 0, 0, 0.253);
@@ -180,6 +292,8 @@ main{
     transition: background-color .3s ease-out;
     & .setting-cell{
       display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
       
       width: 100%;
       justify-content: space-between;
@@ -191,27 +305,92 @@ main{
         flex-basis:60%;
       }
       &:has(input) > label:first-child{
-        flex-basis:30%;
+        flex-basis:40%;
       }
       & input{
         width: 100%;
-        padding: 10px 20px;
-        border: 2px solid #ffffff92;
-        border-radius: 0px;
+        padding: 10px 0px;
+        border: none;
+        border-bottom: 2px solid #ffffff92;
         background-color: transparent;
-        transition-property: border, border-radius;
-        transition-duration: .3s;
-        transition-timing-function: ease-out;
+        transition-property:  border-bottom;
+        transition-duration: .2s;
+        transition-timing-function: linear;
+        box-sizing: content-box;
         &:hover, &:focus{
+          border-bottom: 2px solid #fff;
           outline: none;
-          border-radius: 8px;
-          border: 2px solid #fff;
         }
       }
+      & > .error-feedback{
+        width: 100%;
+        color: red;
+        flex:1;
+      }
+      
     }
     &:hover{
       background-color: rgba(0, 0, 0, 0.1);
     }
+
   }
 }
+button{
+  text-align: center;
+  
+  min-width: 200px;
+  height: max-content;
+  padding: 10px 20px;
+
+  display: flex;
+  justify-content: center;
+
+  border: none;
+  color: #000;
+  background-color: #ffffff92;
+  &:hover{
+    background-color: #ffffff;
+  }
+}
+#submit-avatar{
+  width: 200px;
+  right: 200px;
+  float: right;
+}
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  margin: 0px;
+  border: 3px solid #000000;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #000000 transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 </style>

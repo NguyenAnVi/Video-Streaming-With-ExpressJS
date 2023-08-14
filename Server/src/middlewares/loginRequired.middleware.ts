@@ -14,7 +14,12 @@ interface ModRequest extends Request{
 }
 
 export const loginRequired = (req:ModRequest, res:Response, next:NextFunction) => {
-  if (!req.header('Authorization')) return res.status(401).send({message: 'Please make sure your request has an Authorization header.'});
+  if (!req.header('Authorization')) 
+    return res
+      .status(401)
+      .send({
+        message: 'Unauthorize!' // no author header
+      });
   // Validate jwt
   const tryToken = req.header('Authorization').split(' ')[0];
   token.verifyToken(tryToken, (err:string, payload:TokenPayload) => {
