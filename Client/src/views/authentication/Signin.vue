@@ -36,6 +36,7 @@ export default {
         message:"Already signed in",
         type:"success"
       }).then(()=>{
+        this.$emit('updateAvatar');
         this.$router.push("/")
       });
     }
@@ -46,6 +47,7 @@ export default {
 
       this.$store.dispatch("auth/login", user).then(
         () => {
+          this.$emit('updateAvatar');
           this.$router.go(-1);
         },
         (error) => {

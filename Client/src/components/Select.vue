@@ -19,7 +19,6 @@ export default {
   },
   methods:{
     clearSelected(){
-      console.log("clearSelected");
       const select = document.getElementById(this.selectOptions.optionId);
       select.children[1].children.forEach(element => {
         element.removeAttribute('selected');

@@ -44,20 +44,17 @@ export const auth = {
           return Promise.resolve(response);
         },
         error => {
-          console.log(error);
           return Promise.reject(error);
         }
       );
     },
     updateavatar({ commit }, avatar) {
-      console.log(avatar);
       return AuthService.updateavatar(avatar).then(
         response => {
           commit('updateAvatarSuccess', response);
           return Promise.resolve(response);
         },
         error => {
-          console.log(error);
           return Promise.reject(error);
         }
       );

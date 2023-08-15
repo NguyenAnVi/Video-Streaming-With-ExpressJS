@@ -118,24 +118,20 @@ export default {
       );
     },
     saveSrc(imgSrc){
-      console.log("atSettingViews");
       this.avtSrc = imgSrc;
       this.$refs.newavatar.value = imgSrc;
-      console.log(this.avtSrc);
     },
-    handleUpdateAvatar(){
+    async handleUpdateAvatar(){
       this.message = "";
       this.successful = false;
       this.loading = true;
 
       const payload = {avatar: this.avtSrc}
-      console.log(payload);
-      this.$store.dispatch("auth/updateavatar", payload).then(
+      await this.$store.dispatch("auth/updateavatar", payload).then(
         (data) => {
           this.message = data.message;
           this.successful = true;
           this.loading = false;
-          this.$emit('updateAvatar');
           toast(this.message);
         },
         (error) => {
@@ -149,6 +145,7 @@ export default {
           this.loading = false;
         }
       );
+      this.$emit('updateAvatar');
     }
   }
 }

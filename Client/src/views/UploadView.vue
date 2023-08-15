@@ -53,12 +53,14 @@ export default {
 
 <template>
   <main>
-    <h1>Upload Video</h1>
-    <div class="wrapper" v-show="currentUser">
-      Upload video will be here
-    </div>
-    <div class="wrapper" v-show="!currentUser">
-      You need to signin to perform this action
+    <div class="wrapper">
+      <h1>Upload Video</h1>
+      <div class="section-wrapper" v-show="currentUser">
+        Upload video will be here
+      </div>
+      <div class="section-wrapper" v-show="!currentUser">
+        You need to signin to perform this action
+      </div>
     </div>
   </main>
 </template>
@@ -82,7 +84,7 @@ select{
   }
 }
 main{
-  padding-inline: 20%;
+  padding-inline: 10%;
   & > h1:first-child{
     margin-inline: 8px;
     margin-top: 50px;

@@ -19,7 +19,7 @@ export default {
       avtSrc: "http://localhost:3001/account.png",
     }
   },
-  mounted: ()=>{
+  mounted: function (){
     const sidebar = document.getElementById("sidebar");
     const openSideBar = (sb) => {
       sb.classList.add("opened");
@@ -37,6 +37,7 @@ export default {
     logo.addEventListener('click', ()=>{
       toggleSideBar(sidebar);
     });
+    this.updateAvatar();
   },
   computed:{
     currentUser() {
@@ -72,20 +73,16 @@ export default {
       this.$router.push('/');
     },
     updateAvatar(){
+      console.log("this.updateAvatar");
+      this.avtSrc = "http://localhost:3001/account.png";
       const newAvtSrc = JSON.parse(localStorage.getItem('user')).avatar;
       this.isValidImage(newAvtSrc).then(isValid => {
         if (isValid) {
           // The image is valid
-          this.avtSrc = newAvtSrc;
-
-        } else {
-          // The image is not valid
-          this.avtSrc = "http://localhost:3001/account.png";
+          this.avtSrc = newAvtSrc+"?timestamp="+Date.now();
+          // this.$refs.useravatar.src = this.avtSrc;
         }
       });
-      console.log(this.avtSrc);
-      console.log(this.$refs.useravatar);
-      // this.$refs.useravatar.src = this.avtSrc;
     }
   }
 }
@@ -198,12 +195,15 @@ export default {
   /* box-shadow: inset 0 0 3px var(--color-background-5); */
   border-radius: 8px;
 }
+#sidebar-toggler{
+  width: var(--sidebar-icon-width);
+}
 #header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 8px;
+  padding: 8px 8px 8px 0;
   height: var(--header-height);
   line-height: 1.5;
 
@@ -279,9 +279,10 @@ export default {
     }
     & > .user-menu{
       width: 140px;
-      height: 30px;
+      height: 32px;
       display: block;
       overflow: hidden;
+      border-radius: 16px;
       
       &>*{
         z-index: 10;
@@ -290,11 +291,11 @@ export default {
       }
 
       & > .menu-label{
+        height: inherit;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         background-color: #fff;
-        gap: 4px;
 
         & > .user-avatar{
           border-radius: 50%;
@@ -305,8 +306,14 @@ export default {
         }
         & > .user-text{
           text-align: center;
+          overflow: hidden;
+          font-size: 12px;
+          font-weight: 800;
+          width: calc(140px - 40px - 10px);
+          padding-right: 5px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           color: #000;
-          flex-grow: 1;
         }
       }
       & > ul{
