@@ -11,6 +11,15 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 const __dirname = fileURLToPath(import.meta.url);
+
+const publicPaths = [
+  './public',
+  './public/storage',
+  './public/storage/avatar'
+]
+publicPaths.forEach((path)=>{
+  Locals.config().createFolderIfNotExist(path);
+});
 Database.init();
 
 app.use(cors());
