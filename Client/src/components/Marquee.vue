@@ -1,9 +1,6 @@
 <script>
 export default {
   name:"Marquee",
-  // props:[
-  //   ''
-  // ]
 }
 </script>
 
@@ -21,8 +18,7 @@ export default {
   display: flex;
   align-items: center;
 
-  background-color: rgba(255, 0, 0, 0.326);
-  color: white;
+  color: black;
 
   white-space: nowrap;
   overflow: hidden;

@@ -98,6 +98,7 @@ export default {
       this.successful = false;
       this.loading = true;
 
+      console.log(user);
       this.$store.dispatch("auth/updateprofile", user).then(
         (data) => {
           this.message = data.message;
@@ -119,7 +120,8 @@ export default {
     },
     saveSrc(imgSrc){
       this.avtSrc = imgSrc;
-      this.$refs.newavatar.value = imgSrc;
+      document.getElementById('newavatar').value = imgSrc;
+      document.getElementById('newavatar').dispatchEvent(new Event('change'));
     },
     async handleUpdateAvatar(){
       this.message = "";
@@ -127,6 +129,7 @@ export default {
       this.loading = true;
 
       const payload = {avatar: this.avtSrc}
+      console.log(payload);
       await this.$store.dispatch("auth/updateavatar", payload).then(
         (data) => {
           this.message = data.message;
@@ -171,10 +174,10 @@ export default {
             <label for="language">Display language (Coming soon)</label>
             <Select disabled :selectOptions="selectOptions" selectName="select" selectId="select"></Select>
           </div>
-          <div class="setting-cell ">
+          <!-- <div class="setting-cell ">
             <label for="language">Display language (Coming soon)</label>
             <input type="text"/>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="settings-section" v-if="currentUser">
@@ -223,8 +226,9 @@ export default {
           </div>
         </form>
         <Form @submit="handleUpdateAvatar" class="settings">
-          <UploadImage @onSrcChange="saveSrc"></UploadImage>
-          <Field ref="newavatar" type="hidden" name="newavatar" :value="avtSrc"/>
+          <label for="">Avatar</label>
+          <UploadImage :aspect-ratio="1" @croppingChanged="saveSrc"></UploadImage>
+          <Field ref="newavatar" id="newavatar" type="hidden" name="newavatar"/>
           <button :disabled="loading" id="submit-avatar">
             <div
               v-show="loading"
@@ -241,7 +245,6 @@ export default {
 
 <style scoped>
 *{
-  color: #fff;
   background-color: transparent;
 }
 main{
@@ -249,10 +252,14 @@ main{
   align-items: center;
   justify-content: center;
   margin: 0;
+  overflow: hidden;
 }
 .settings-wrapper{
   max-width: 1800px;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   & > h1:first-child{
     margin-inline: 16px;
@@ -260,9 +267,7 @@ main{
     margin-bottom: 16px;
   }
 
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  
 }
 .sidebar-parallel{
   width: var(--sidebar-icon-width);
@@ -272,8 +277,9 @@ main{
   }
 }
 .settings-section{
-  background-color: rgba(0, 0, 0, 0.253);
+  background-color: rgba(255, 255, 255, 0.253);
   padding: 16px;
+  width: 750px;
   border-radius: 8px;
 
   &>h2{
@@ -284,7 +290,6 @@ main{
     display: flex;
     flex-direction: column;
     padding: 16px;
-    margin-left: 16px;
     border-radius: 8px;
     transition: background-color .3s ease-out;
     & .setting-cell{

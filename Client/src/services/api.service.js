@@ -22,6 +22,7 @@ class ApiService {
     });
       
   }
+
   async getRecomendedVideos (currentVideo) {
     return await axios
     .post(
@@ -48,7 +49,6 @@ class ApiService {
     });
       
   }
-    
 
   async getVideos() {
     return await axios
@@ -66,6 +66,24 @@ class ApiService {
           error:err
         }
       });
+  }
+
+  async uploadVideo (payload) {
+    return await axios
+    .post(API_URL + 'uploadvideo',{data: payload})
+    .then(response => {
+      const data = response.data;
+      return {
+        status:true,
+        data
+      };
+    })
+    .catch(error=>{
+      return {
+        status:false,
+        error
+      }
+    });
   }
 }
 

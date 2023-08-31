@@ -1,5 +1,5 @@
 <script>
-import { Suspense } from "vue";
+import { Suspense, Transition } from "vue";
 import { routes as routerRoutes } from "./router";
 import { RouterLink, RouterView } from "vue-router";
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -12,6 +12,7 @@ export default {
     NavNavbar:'nav-navbar',
     NavSidebar:'nav-sidebar',
     Suspense,
+    Transition
   },
   data(){
     return{
@@ -73,14 +74,12 @@ export default {
       this.$router.push('/');
     },
     updateAvatar(){
-      console.log("this.updateAvatar");
       this.avtSrc = "http://localhost:3001/account.png";
       const newAvtSrc = JSON.parse(localStorage.getItem('user')).avatar;
       this.isValidImage(newAvtSrc).then(isValid => {
         if (isValid) {
           // The image is valid
           this.avtSrc = newAvtSrc+"?timestamp="+Date.now();
-          // this.$refs.useravatar.src = this.avtSrc;
         }
       });
     }
@@ -151,7 +150,11 @@ export default {
       </div>
       <div id="content">
         <Suspense>
-          <RouterView @updateAvatar="updateAvatar" />
+          <RouterView @updateAvatar="updateAvatar" v-slot="{ Component }">
+            <Transition name="fade" mode="out-in">
+              <component :is="Component"/>
+            </Transition>
+          </RouterView>
         </Suspense>
       </div>
      </div>
@@ -179,6 +182,14 @@ export default {
   --sidebar-icon-width: 48px;
   --sidebar-width: 200px;
 }
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active{
+  transition: opacity .5s ease-out;
+}
 #appWrapper {
   margin: 8px;
   padding: 8px;
@@ -187,6 +198,19 @@ export default {
   flex-direction: column;
   gap: 8px;
 
+   /* Set a specified height, or the minimum height for the background image */
+  
+  /* Set background image to fixed (don't scroll along with the page) */
+  background-attachment: fixed;
+  
+  /* Center the background image */
+  background-position: center;
+  
+  /* Set the background image to no repeat */
+  background-repeat: no-repeat;
+  
+  /* Scale the background image to be as large as possible */
+  background-size: cover;
   background-image: url(@public/background.jpg);
   border-radius: 8px;
 }

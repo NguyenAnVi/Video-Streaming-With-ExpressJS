@@ -44,6 +44,20 @@ export const video = {
                 reject(response.error);
             });
       });
+    },
+    upload({}, payload){
+      return new Promise ( async function (resolve, reject) {
+        return await ApiService.uploadVideo(payload)
+          .then(function (response) {
+            if(response.status){
+              const data = response; 
+              resolve(data);
+            } else {
+              const error = response.error || "NetworkError";
+              reject(error);
+            }
+          });
+      });
     }
   },
 };

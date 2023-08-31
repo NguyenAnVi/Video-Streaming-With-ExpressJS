@@ -9,7 +9,8 @@ export type VideoDocument = mongoose.Document & {
     likes:Number,
     dislikes:Number
   };
-  views:Number
+  duration:Number;
+  views:Number;
   status: Number;
   deleted_at: mongoose.Schema.Types.Date;
 };

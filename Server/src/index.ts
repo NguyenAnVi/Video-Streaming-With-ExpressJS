@@ -15,7 +15,8 @@ const __dirname = fileURLToPath(import.meta.url);
 const publicPaths = [
   './public',
   './public/storage',
-  './public/storage/avatar'
+  './public/storage/avatar',
+  './public/storage/videos'
 ]
 publicPaths.forEach((path)=>{
   Locals.config().createFolderIfNotExist(path);

@@ -95,7 +95,7 @@ export default {
       cursor: pointer;
       
       border-radius: 4px;
-      background-color: #ffffff66;
+      background-color: #eee;
       color: #000;
       &[selected=true]{
         color: #080;

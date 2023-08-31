@@ -2,7 +2,7 @@
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { reactive, watchEffect } from "vue";
+import { reactive } from "vue";
 import VideoPlayer from "../components/VideoPlayer.vue";
 import VideoCardHorizontal from '../components/VideoCardHorizontal.vue';
 

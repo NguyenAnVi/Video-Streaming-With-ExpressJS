@@ -1,8 +1,9 @@
-import fs from "fs";
+import fs, { writeFile } from "fs";
 import path from 'path';
 import express from "express";
 import {fileURLToPath} from 'url';
 import VideoModel from "../models/video.model";
+import Locals from "../providers/locals";
 const __filename = fileURLToPath(import.meta.url);
 const __videoDir = path.dirname(__filename+"../videos/");
 
@@ -140,6 +141,63 @@ export const getVideoProperties = async function (req, res) {
     });
 
 }
-// export const getVideoPlayer = function (req, res) {
-//   res.sendFile(__dirname + "/html/videoplayer.html");
-// }
+export const uploadVideo = async function (req:any, res:any){
+  const data = req.body.data;
+  setTimeout(async () => {
+    const hostname = Locals.config().hostname;
+    const port = Locals.config().port;
+    const timestamp = Date.now();
+    const filepath = './public/storage/videos/'+timestamp+"/";
+    const publicpath = hostname + ':' + port + '/storage/videos/'+timestamp+"/";
+
+    Locals.config().createFolderIfNotExist(filepath);
+
+    var videoData = data.video.replace(/^data:video\/mp4;base64,/, "");
+    let filename = 'video.mp4';
+    const videoPublicUrl = publicpath+filename;
+    writeFile(filepath+filename, videoData, {
+      encoding:'base64',
+      flag:'w+'
+    }, function(werr) {
+      if(werr){
+        console.log(werr);
+        return res.status(500).json({
+          message:werr.message,
+        });
+      }
+    });
+
+    var imageData = data.thumbnail.replace(/^data:image\/png;base64,/, "");
+    filename = 'thumbnail.png';
+    const thumbnailPublicUrl = publicpath+filename;
+    writeFile(filepath+filename, imageData, {
+      encoding:'base64',
+      flag:'w+'
+    }, function(werr) {
+      if(werr){
+        console.log(werr);
+        return res.status(500).json({
+          message:werr.message,
+        });
+      }
+    });
+
+    const newvideo = await new VideoModel({
+      title: data.videoTitle,
+      description: data.videoDescription,
+      path: videoPublicUrl,
+      thumbnail: thumbnailPublicUrl,
+      duration:data.info.duration,
+      status: 1
+    }).save().then(
+      videoResult => {
+        return res.status(200).json({
+          message:"Uploaded!"
+        });
+      }
+    )
+
+    
+
+  }, 1000);
+}
