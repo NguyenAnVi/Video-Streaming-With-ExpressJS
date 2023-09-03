@@ -1,4 +1,5 @@
 import axios from 'axios';
+import authHeader from './auth-header';
 import config from '../config/index.config';
 
 const API_URL = config.API_URL;
@@ -70,7 +71,17 @@ class ApiService {
 
   async uploadVideo (payload) {
     return await axios
-    .post(API_URL + 'uploadvideo',{data: payload})
+    .post(
+      API_URL + 'uploadvideo',
+      {
+        data: payload
+      },
+      {
+        headers:{
+          ...authHeader(),
+        }
+      }
+    )
     .then(response => {
       const data = response.data;
       return {
@@ -84,6 +95,53 @@ class ApiService {
         error
       }
     });
+  }
+
+  async countView (payload) {
+    return await axios
+    .get(
+      API_URL + 'countview/'+payload.id,
+      {
+        data: payload
+      },
+      {
+        headers:{
+          ...authHeader(),
+        }
+      }
+    )
+    .then(response => {
+      const data = response.data;
+      return {
+        status:true,
+        data
+      };
+    })
+    .catch(error=>{
+      return {
+        status:false,
+        error
+      }
+    });
+  }
+
+  async getAccountInfo (id) {
+    return await axios
+    .get(API_URL + 'account/'+id)
+    .then(response => {
+      const data = response.data;
+      return {
+        status:true,
+        data
+      };
+    })
+    .catch(error=>{
+      return {
+        status:false,
+        error
+      }
+    });
+      
   }
 }
 

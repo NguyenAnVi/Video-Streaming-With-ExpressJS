@@ -7,24 +7,26 @@ const VideoScheme = new mongoose.Schema<VideoDocument>(
     description: String,
     path: String,
     thumbnail: String,
+    owner:mongoose.Schema.Types.ObjectId,
     views:{
-      type:Number,
+      type: mongoose.Schema.Types.Number,
       default:0
     },
     duration:{
-      type:Number
+      type: mongoose.Schema.Types.Number,
+      default: 0
     },
     interactions:{
       likes:{
-        type:Number,
+        type:mongoose.Schema.Types.Number,
         default: 0
       },
       dislikes:{
-        type:Number,
+        type:mongoose.Schema.Types.Number,
         default: 0
       },
     },
-    status: Number,
+    status: mongoose.Schema.Types.Number,
     deleted_at: mongoose.Schema.Types.Date
   },
   { timestamps: true, collection: "Video" }

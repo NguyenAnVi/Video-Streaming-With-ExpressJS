@@ -23,7 +23,7 @@ export default {
         </div>
         <div class="video-properties" :data-video-id=videoId>
           <div class="video-title" :data-video-id=videoId>{{title}}</div>
-          <div class="author-name" :data-video-id=videoId>{{'Author Name'}}</div>
+          <div class="author-name" :data-video-id=videoId>{{authorName}}</div>
           <div class="video-stats" :data-video-id=videoId>
             <div class="views" :data-video-id=videoId>{{ views }} views</div>
             <div class="uploaded" :data-video-id=videoId>{{ uploaded }}</div>
@@ -39,6 +39,7 @@ export default {
   
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   background-color: transparent;
 
   transition-property: transform;
@@ -52,51 +53,67 @@ export default {
   &:hover, &:focus {
     transform: scale(1.03);
   }
-  
-}
-.video-thumbnail-wrapper{
-  overflow: hidden;
-  display: flex;
-  border-radius: 8px;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 5px var(--color-background-5);
-  &>.video-thumbnail{
-    aspect-ratio: 16/9;
-    width: 100%;
-    object-fit: cover;
-  }
-}
-.video-info{
-  display: flex;
-  width: 100%;
-  & > *:first-child{
-    flex-basis: 30px;
-    & .author-avatar{
-      width: 35px;
-      padding: 8px;
-    }
-  }
-  & .video-properties{
-    width: 100%;
-    padding-block: 8px;
+  & .video-thumbnail-wrapper{
+    overflow: hidden;
     display: flex;
-    flex-direction: column;
-
-    & .video-title{
-      font-weight: bolder;
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 5px var(--color-background-5);
+    &>.video-thumbnail{
+      aspect-ratio: 16/9;
       width: 100%;
+      object-fit: cover;
     }
-    & .author-name{
-      color: var(--color-text-3);
+  }
+  & .video-info{
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    & > *:first-child{
+      & .author-avatar{
+        width: 40px;
+        height: 40px;
+        aspect-ratio: 1/1;
+        padding: 8px 8px 8px 0;
+        border-radius: 50%;
+        box-sizing: border-box;
+      }
     }
-    & .video-stats{
-      color: var(--color-text-3);
+    & .video-properties{
+      width: calc(100% - 40px);
+      padding-block: 8px;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+
+      & .video-title{
+        display: -webkit-box;
+        font-weight: bolder;
+        text-justify: distribute;
+        line-height: 1.25em;
+        overflow: hidden;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        height: 2.5em;
+      }
+      & .author-name{
+        color: var(--color-text-3);
+      }
+      & .video-stats{
+        color: var(--color-text-3);
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
     }
   }
 }
+
+
 @media only screen and (max-width:1800px){
   .video-card{
     width: calc((100% / 4) - 12px);

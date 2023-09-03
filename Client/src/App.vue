@@ -75,7 +75,7 @@ export default {
     },
     updateAvatar(){
       this.avtSrc = "http://localhost:3001/account.png";
-      const newAvtSrc = JSON.parse(localStorage.getItem('user')).avatar;
+      const newAvtSrc = JSON.parse(localStorage.getItem('user'))?.avatar || this.avtSrc;
       this.isValidImage(newAvtSrc).then(isValid => {
         if (isValid) {
           // The image is valid

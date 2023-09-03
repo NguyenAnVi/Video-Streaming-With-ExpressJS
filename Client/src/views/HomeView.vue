@@ -30,8 +30,26 @@ export default {
     watchEffect( async function (){
       await store.dispatch("video/getVideosForHomePage")
       .then(
-        response=>{
+        async response=>{
           video.videos = response.videos;
+          video.videos.forEach( async (value)=>{
+
+            await store.dispatch('account/getAccountInfo', {
+              id:value.owner
+            })
+            .then(
+              response=>{
+                value.ownerInfo = response.data.user;
+              }
+            )
+            .catch(
+              error=>{
+                value.ownerInfo ={
+                  fullName:"Unknown User"
+                };
+              }
+            );
+          })
         }
       )
       .catch(
@@ -83,14 +101,15 @@ export default {
     </div>
     <VideoWrapper>
       <VideoCard
-        v-for="video in video.videos"
-        :data-video-id="video._id"
-        :videoId="video._id" 
-        authorAvtSrc="http://localhost:3001/account.png" 
-        :videoThumbnailSrc="video.thumbnail"
-        :title="video.title"
-        :views="video.views"
-        :uploaded="calcDate(video.uploaded_at)"
+        v-for="vid in video.videos"
+        :data-video-id="vid._id"
+        :videoId="vid._id" 
+        :authorAvtSrc="vid.ownerInfo?.avatar"
+        :videoThumbnailSrc="vid.thumbnail"
+        :title="vid.title"
+        :views="vid.views"
+        :uploaded="calcDate(vid.createdAt)"
+        :authorName="vid.ownerInfo?.fullName"
         @click.prevent="goToVideo($event)"
       />
     </VideoWrapper>

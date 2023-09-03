@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
 
 export type VideoDocument = mongoose.Document & {
+  owner:mongoose.Schema.Types.ObjectId;
   title: string;
   description: string;
   path: string;
   thumbnail: string;
   interactions:{
-    likes:Number,
-    dislikes:Number
+    likes:number,
+    dislikes:number
   };
-  duration:Number;
-  views:Number;
-  status: Number;
+  duration:number;
+  views:number;
+  status: number;
   deleted_at: mongoose.Schema.Types.Date;
 };
 export default VideoDocument;

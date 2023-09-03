@@ -2,7 +2,7 @@
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import VideoPlayer from "../components/VideoPlayer.vue";
 import VideoCardHorizontal from '../components/VideoCardHorizontal.vue';
 
@@ -13,7 +13,7 @@ export default {
   },
   data(){
     return {
-      videoProps: this.video
+      videoProps: this.video,
     }
   },
   async setup(){
@@ -23,7 +23,8 @@ export default {
 
     var video = reactive({
       id:"",
-      props:{}
+      props:{},
+      viewing:{}
     });
     var recommendedVideos = reactive({});
 
@@ -35,12 +36,14 @@ export default {
       .then(
         response=>{
           video.props = response.data.video;
+          video.viewing = response.data.videoviewing;
         }
       )
       .catch(
         error=>{
           toast(error.message, {type:"error"});
           video.props = {};
+          video.viewing = {};
         }
       );
 
@@ -59,7 +62,7 @@ export default {
           recommendedVideos = {};
         }
       );
-    return { video, recommendedVideos };
+    return { video, recommendedVideos, store };
   },
   methods:{
     calcDate: (d)=>{
@@ -78,7 +81,44 @@ export default {
     goToVideo(event) {
       const id = event.target.getAttribute('data-video-id');
       location.assign(`/watch${(id)?('?v='+id):''}`);
+    },
+  },
+  mounted(){
+    const video = document.getElementsByTagName('video')[0];
+    const videoDuration = this.video.props.duration;
+    var watchDuration = 0;
+    var lastEvent = Date.now();
+    video.addEventListener('play', function(){
+      lastEvent = Date.now();
+    });
+    if(video) {
+      let counting = true;
+      var videoviewing = JSON.stringify(this.videoProps.viewing);
+      const store = this.store;
+      video.setAttribute('viewingId', videoviewing);
+      video.addEventListener('timeupdate', function(e){
+        const viewingId = JSON.parse(e.target.getAttribute("viewingId"))._id;
+        const now = Date.now();
+        watchDuration += new Date(now - lastEvent).getTime() /1000 ;
+        lastEvent = now;
+        if (((watchDuration > 30)||(watchDuration >= videoDuration)) && counting){ // check whether the watchDuration counted to 30s
+          // Watch duration is valid for count view
+          counting = false;
+
+          store.dispatch('video/countView', {id:viewingId});
+        }
+      });
     }
+
+    document.addEventListener('keydown', function(e){
+      if(e.key==' ' || e.code=="Space" || e.keyCode==32){
+        e.preventDefault();
+        if(video.paused)
+          video.play();
+        else
+          video.pause();
+      }
+    })
   }
 }
 </script>
@@ -137,19 +177,30 @@ export default {
 <style scoped>
 .wrapper{
   display: flex;
-  margin: 0;
+  margin: 0 !important;
+  /* width: calc(100% - var(--sidebar-icon-width)); */
+  width: 100%;
+  overflow: hidden;
 }
 .content-wrapper{
-  max-width: 1600px;
+  width: 50rem;
+  max-width: 100%;
 
   display: flex;
   gap: 16px;
-  padding: 16px 0 16px 16px;
+  padding: 16px;
   height: 100%;
+
+  @media (max-width:1080px){
+    flex-direction: column;
+  }
 }
 .sidebar-parallel{
   width: var(--sidebar-icon-width);
   margin-left: 8px;
+  @media (max-width: 1080px) {
+    display: none;
+  }
 }
 .video-column{
   padding-top: 16px;
@@ -191,14 +242,12 @@ export default {
   }
 }
 .recommend-column{
+  max-width: 300px;
   display: flex;
   padding: 16px;
   flex-direction: column;
   flex-basis: 480px;
   gap: 8px;
-  &>*{
-    max-width: 444px;
-  }
 }
 .hashtags{
   color: lightgray !important;

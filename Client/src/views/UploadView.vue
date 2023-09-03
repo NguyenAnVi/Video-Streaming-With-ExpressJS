@@ -81,7 +81,7 @@ export default {
   data() {
     return {
       currentTimeCode:0.0,
-      videoDuration:0.0,
+      videoDuration:0,
       videoFile:{},
       videoUrl: "",
       isVideoFileSelected: false,
@@ -136,6 +136,9 @@ export default {
     return { video, ...toRefs(state), onWheel, modules };
   },
   methods: {
+    async getMetadata($event){
+      this.videoDuration = $event.target.duration;
+    },
     async HandleVideoFileSelect(file) {
       this.videoFile = file;
       this.videoUrl = URL.createObjectURL(file);
@@ -143,11 +146,7 @@ export default {
 
       var vid = document.createElement('video');
       vid.src = this.videoUrl;
-
-      vid.onloadedmetadata = async function () {
-        this.videoDuration = vid.duration;
-      }
-
+      
       document.getElementById('videoInput').value = await toBase64(file);
       document.getElementById('videoInput').dispatchEvent(new Event('change'));
       document.getElementById('videoTitle').setAttribute('placeholder', file.name);
@@ -272,6 +271,7 @@ export default {
                 controls="false"
                 :src="videoUrl"
                 v-if="videoUrl"
+                @loadedmetadata="getMetadata($event)"
                 @pause="getCurrentTimecode($event)"
                 @seeked="getCurrentTimecode($event)"
               ></video>
@@ -331,7 +331,7 @@ export default {
               v-model:content="videoDescription"
               @input="onEditorChangeHandler"
             />
-            <Field type="text" ref="videoDescription" id="videoDescription" name="videoDescription" />
+            <Field type="hidden" ref="videoDescription" id="videoDescription" name="videoDescription" />
             <!-- <ErrorMessage name="videoDescription" /> -->
           </div>
           <div class="cell-wrapper">
@@ -349,7 +349,6 @@ export default {
         You need to signin to perform this action
       </div>
     </div>
-    <div class="sidebar-parallel"></div>
   </main>
 </template>
 
@@ -359,10 +358,11 @@ export default {
 }
 main {
   display: flex;
-  align-items: center;
-  justify-content: center;
   margin: 0;
+  padding: 0;
+  width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .video-preview{
   width: 48%;
@@ -398,8 +398,6 @@ main {
   background-color: transparent !important;
 }
 .wrapper {
-  max-width: 1800px;
-  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -407,7 +405,9 @@ main {
 .section-wrapper {
   background-color: rgba(255, 255, 255, 0.253);
   padding: 16px;
-  width: 750px;
+  margin: 16px;
+  width: 75%;
+
   box-sizing: border-box;
     
   border-radius: 8px;
@@ -485,15 +485,11 @@ main {
       }
     }
   }
-}
-
-.sidebar-parallel {
-  width: var(--sidebar-icon-width);
-  margin-left: 8px;
-  @media only screen and (max-width: 768px) {
-    display: none;
+  @media (max-width:768px){
+    width: 95%;
   }
 }
+
 input {
   width: fit-content;
 }

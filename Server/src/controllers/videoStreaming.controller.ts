@@ -4,6 +4,7 @@ import express from "express";
 import {fileURLToPath} from 'url';
 import VideoModel from "../models/video.model";
 import Locals from "../providers/locals";
+import VideoViewingModel from "src/models/videoViewing.model";
 const __filename = fileURLToPath(import.meta.url);
 const __videoDir = path.dirname(__filename+"../videos/");
 
@@ -123,21 +124,59 @@ export const getVideoProperties = async function (req, res) {
     .findById(id)
     .then((videoResult)=>{
       if (videoResult) {
+        //create new videoViewing
+        var vv = new VideoViewingModel({
+          videoId: videoResult._id
+        });
+        vv.save();
         return res.status(200).json({
-          video:videoResult
-        })
+          video:videoResult,
+          videoviewing:vv
+        });
       } else {
         return res.status(404).json({
           message:"Video not found.",
-          video:null
-        })
+          video:null,
+          videoviewing:null
+        });
       }
     })
     .catch((err)=>{
       return res.status(500).json({
         message:err.message,
-        data:id
       })
+    });
+
+}
+export const countView = async function (req, res) {
+  const id = req.params.videoid as string;
+  await VideoViewingModel
+    .findByIdAndDelete(id)
+    .then((videoViewingResult)=>{
+      if (videoViewingResult) {
+        VideoModel
+          .findById(videoViewingResult.videoId)
+          .then(videoResult=>{
+            if(videoResult){
+              videoResult.views++;
+              videoResult.save();
+              return res.status(200);
+            } else {
+              return res.status(404).json({
+                message:"Video not found.",
+              });
+            }
+          });
+      } else {
+        return res.status(404).json({
+          message:"Video viewing record not found.",
+        });
+      }
+    })
+    .catch((err)=>{
+      return res.status(500).json({
+        message:err.message,
+      });
     });
 
 }
@@ -183,6 +222,7 @@ export const uploadVideo = async function (req:any, res:any){
     });
 
     const newvideo = await new VideoModel({
+      owner: req.user._id,
       title: data.videoTitle,
       description: data.videoDescription,
       path: videoPublicUrl,
