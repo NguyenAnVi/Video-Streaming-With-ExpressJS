@@ -78,7 +78,7 @@ export default {
         aspect-ratio: 1/1;
         padding: 8px 8px 8px 0;
         border-radius: 50%;
-        box-sizing: border-box;
+        box-sizing: content-box;
       }
     }
     & .video-properties{

@@ -14,6 +14,17 @@ export default {
   data(){
     return {
       videoProps: this.video,
+      listener:  function(e){
+      const video = document.getElementsByTagName('video')[0];
+
+      if(e.key==' ' || e.code=="Space" || e.keyCode==32){
+        e.preventDefault();
+        if(video.paused)
+          video.play();
+        else
+          video.pause();
+      }
+    }
     }
   },
   async setup(){
@@ -34,8 +45,23 @@ export default {
         id:video.id
       })
       .then(
-        response=>{
+        async (response)=>{
           video.props = response.data.video;
+          await store.dispatch('account/getAccountInfo', {
+            id:response.data.video.owner
+          })
+          .then(
+            response=>{
+              video.props.ownerInfo = response.data.user;
+            }
+          )
+          .catch(
+            error=>{
+              video.props.ownerInfo ={
+                fullName:"Unknown User"
+              };
+            }
+          );
           video.viewing = response.data.videoviewing;
         }
       )
@@ -110,15 +136,11 @@ export default {
       });
     }
 
-    document.addEventListener('keydown', function(e){
-      if(e.key==' ' || e.code=="Space" || e.keyCode==32){
-        e.preventDefault();
-        if(video.paused)
-          video.play();
-        else
-          video.pause();
-      }
-    })
+    document.addEventListener('keydown',this.listener);
+  },
+  beforeUnmount(){
+    console.log(this.listener);
+    document.removeEventListener('keydown',this.listener)
   }
 }
 </script>
@@ -136,10 +158,10 @@ export default {
           <h2>{{ this.video.props.title }}</h2>
           <div class="author-wrapper">
             <div class="author-avatar-wrapper">
-              <img class="author-avatar" src="http://localhost:3001/account.png">
+              <img class="author-avatar" :src="this.video.props.ownerInfo.avatar">
             </div>
             <div class="author-name">
-              Nguyen An Vi
+              {{this.video.props.ownerInfo.fullName}}
             </div>
           </div>
           <div class="description-wrapper">
@@ -179,11 +201,10 @@ export default {
   display: flex;
   margin: 0 !important;
   /* width: calc(100% - var(--sidebar-icon-width)); */
-  width: 100%;
   overflow: hidden;
 }
 .content-wrapper{
-  width: 50rem;
+  width: 60rem;
   max-width: 100%;
 
   display: flex;
@@ -221,11 +242,14 @@ export default {
       align-items: center;
       gap: 8px;
       & .author-avatar{
-        width: 30px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         padding: 4px;
+        box-sizing: content-box;
       }
       & .author-name{
-        font-size: small;
+        font-weight: bold;
       }
     }
     & .description-wrapper {
