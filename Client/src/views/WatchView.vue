@@ -2,13 +2,13 @@
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { reactive, ref } from "vue";
-import VideoPlayer from "../components/VideoPlayer.vue";
+import { reactive } from "vue";
+// import VideoPlayer from "../components/VideoPlayer.vue";
 import VideoCardHorizontal from '../components/VideoCardHorizontal.vue';
 
 export default {
   components : {
-    VideoPlayer,
+    // VideoPlayer,
     VideoCardHorizontal
   },
   data(){
@@ -150,7 +150,8 @@ export default {
       <div class="video-column">
         <div class="video-wrapper">
             <!-- <VideoPlayer ref="videoplayer" :key="this.allowRender" v-if="allowRender" videoId="videoId" :src.sync="this.getVideoSource" :title.sync="this.getVideoTitle" :cover.sync="this.getVideoCover"/> -->
-            <VideoPlayer :properties="this.video.props"/>
+            <!-- <VideoPlayer :properties="this.video.props"/> -->
+            <slot name="videoplayer" :properties="this.video.props"></slot>
         </div>
 
         <!-- descriptions here -->

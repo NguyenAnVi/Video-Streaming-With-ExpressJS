@@ -94,37 +94,6 @@ export default {
     };
   },
   setup() {
-    const toast = useToast();
-    const store = useStore();
-    const state = reactive({
-      scroller: null,
-      scrollLeft: 0,
-    });
-
-    const onWheel = (e) => {
-      state.scrollLeft = state.scroller
-        ? min(
-            state.scroller.scrollWidth - state.scroller.offsetWidth,
-            max(0, e.deltaY + state.scrollLeft)
-          )
-        : state.scrollLeft;
-    };
-    const video = reactive({
-      videos: [],
-    });
-
-    watchEffect(async function () {
-      await store
-        .dispatch("video/getVideosForHomePage")
-        .then((response) => {
-          video.videos = response.videos;
-        })
-        .catch((error) => {
-          toast(error.message, { type: "error" });
-          video.videos = null;
-        });
-    });
-
     const modules = {
       name: 'htmlEditButton',
       module: QuillHTMLEditButton,
@@ -133,7 +102,7 @@ export default {
       },
     };
 
-    return { video, ...toRefs(state), onWheel, modules };
+    return { modules };
   },
   methods: {
     async getMetadata($event){
@@ -214,7 +183,7 @@ export default {
 
       await this.$store.dispatch("video/upload", video).then(
         (success) => {
-          toast(success.data.message, { type:"success" });
+          this.$emit('notification', { message:success.data.message, type:"success" });
         })
         .catch(
         (error) => {

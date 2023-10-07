@@ -4,7 +4,7 @@ import express from "express";
 import {fileURLToPath} from 'url';
 import VideoModel from "../models/video.model";
 import Locals from "../providers/locals";
-import VideoViewingModel from "src/models/videoViewing.model";
+import VideoViewingModel from "../models/videoViewing.model";
 const __filename = fileURLToPath(import.meta.url);
 const __videoDir = path.dirname(__filename+"../videos/");
 

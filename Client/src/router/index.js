@@ -1,60 +1,76 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue';
-import SettingsView from '@/views/SettingsView.vue';
-import AboutView from '@/views/AboutView.vue';
-import WatchView from '@/views/WatchView.vue';
-import NotFound from '@/views/NotFound.vue';
-import Signin from '@/views/authentication/Signin.vue';
-import Signup from '@/views/authentication/Signup.vue';
-import UploadView from '@/views/UploadView.vue';
-
 
 export const routes = [
   {
     path: '/',
-    name: 'Home',
-    icon: 'house',
-    showInSideBar: true,
-    component: HomeView
+    name: 'home',
+    meta:{
+      title:"Home",
+      sidebarIcon: 'house',
+      showInSideBar: true,
+    },
+    component: ()=>import('@/views/HomeView.vue')
   },
   {
     path: '/about',
-    name: 'About',
-    component: AboutView
+    name: 'about',
+    meta:{
+      title:"About"
+    },
+    component: ()=>import('@/views/AboutView.vue')
   },
   {
     path: '/watch',
-    name: 'Watch',
-    component: WatchView
+    name: 'watch',
+    meta:{
+      title: "Watch"
+    },
+    component: ()=>import('@/views/WatchView.vue')
   },
   {
     path: '/signin',
-    name: 'Signin',
-    component: Signin
+    name: 'signin',
+    meta:{
+      title: "Sign In"
+    },
+    component: ()=>import('@/views/authentication/Signin.vue')
   },
   {
     path: '/signup',
-    name: 'Signup',
-    component: Signup
+    name: 'signup',
+    meta:{
+      title: "Sign Up"
+    },
+    component: ()=>import('@/views/authentication/Signup.vue')
   },
   {
     path: '/upload',
-    name: 'Upload',
-    icon: 'cloud-arrow-up',
-    showInSideBar: true,
-    component: UploadView
+    name: 'upload',
+    meta:{
+      title:"Upload Video",
+      requiresAuth: true,
+      sidebarIcon: 'cloud-arrow-up',
+      showInSideBar: true,
+    },
+    component: ()=>import ('@/views/UploadView.vue')
   },
   {
     path: '/settings',
-    name: 'Settings',
-    icon: 'gear',
-    showInSideBar: true,
-    component: SettingsView
+    name: 'settings',
+    meta:{
+      title:"Settings",
+      sidebarIcon: 'gear',
+      showInSideBar: true,
+    },
+    component: ()=>import('@/views/SettingsView.vue')
   },
   {
     path: "/:pathMatch(.*)*",
-    name:"Page not found",
-    component: NotFound
+    name:"notfound",
+    meta:{
+      title:"404"
+    },
+    component: ()=>import('@/views/NotFound.vue')
   }
 ]
 
